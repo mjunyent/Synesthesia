@@ -9,8 +9,8 @@
 #include "OSXPlayer.h"
 #import "OSX/OFAVFoundationVideoPlayer.h"
 
-CVOpenGLTextureCacheRef _videoTextureCache = NULL;
-CVOpenGLTextureRef _videoTextureRef = NULL;
+CVOpenGLTextureCacheRef _videoTextureCachea = NULL;
+CVOpenGLTextureRef _videoTextureRefa = NULL;
 
 OSXPlayer::OSXPlayer() {
     videoPlayer = NULL;
@@ -153,6 +153,11 @@ int OSXPlayer::getTotalNumFrames() {
     return [((OFAVFoundationVideoPlayer *)videoPlayer) getDurationInFrames];
 }
 
+float OSXPlayer::getSpeed() {
+    if(videoPlayer == NULL) return -1;
+    return [((OFAVFoundationVideoPlayer *)videoPlayer) getSpeed];
+}
+
 
 
 
@@ -236,8 +241,8 @@ Texture* OSXPlayer::getTexture() {
     
     if(!updateTexture) return texture;
     
-    if(/*TEXTURECACHESUPPORTED*/1==1) {
-        
+    if(textureCacheSupported && textureCacheEnabled) {
+        initTextureCache();
     } else {
         
     }
@@ -247,12 +252,60 @@ Texture* OSXPlayer::getTexture() {
 }
 
 
+
+
+void OSXPlayer::setPosition(float pct) {
+    if(videoPlayer == NULL) return;
+    [((OFAVFoundationVideoPlayer *)videoPlayer) setPosition:pct];
+}
+
+void OSXPlayer::setFrame(int frame) {
+    if(videoPlayer == NULL) return;
+    [((OFAVFoundationVideoPlayer *)videoPlayer) setFrame:frame];
+}
+
+void OSXPlayer::setSpeed(float speed) {
+    if(videoPlayer == NULL) return;
+    [((OFAVFoundationVideoPlayer *)videoPlayer) setSpeed:speed];
+}
+
+void OSXPlayer::setVolume(float volume) {
+    if(videoPlayer == NULL) return;
+
+    if ( volume > 1.0f ){
+        Tobago.log->write(Log::WARNING) << "OSXPlayer::setVolume: expected range is 0-1, limiting requested volume " << volume << " to 1.0";
+        volume = 1.0f;
+    }
+    [((OFAVFoundationVideoPlayer *)videoPlayer) setVolume:volume];
+}
+
+
+
+
+void OSXPlayer::firstFrame() {
+    if(videoPlayer == NULL) return;
+    [((OFAVFoundationVideoPlayer *)videoPlayer) setPosition:0];
+}
+
+void OSXPlayer::nextFrame() {
+    int nextFrameNum = clamp(getFrameNum() + 1, 0, getTotalNumFrames());
+    setFrame(nextFrameNum);
+}
+
+void OSXPlayer::previousFrame() {
+    int nextFrameNum = clamp(getFrameNum() - 1, 0, getTotalNumFrames());
+    setFrame(nextFrameNum);
+}
+
+
+
+
 bool OSXPlayer::enableTextureCache() {
     textureCacheSupported = false;
     textureCacheSupported = (CVOpenGLTextureCacheCreate != NULL);
     textureCacheEnabled = true;
 
-    if(textureCacheSupported && _videoTextureCache == NULL) {
+    if(textureCacheSupported && _videoTextureCachea == NULL) {
         CVReturn err;
         
         err = CVOpenGLTextureCacheCreate(kCFAllocatorDefault,
@@ -260,7 +313,7 @@ bool OSXPlayer::enableTextureCache() {
                                          CGLGetCurrentContext(),
                                          CGLGetPixelFormat(CGLGetCurrentContext()),
                                          NULL,
-                                         &_videoTextureCache);
+                                         &_videoTextureCachea);
         
         if(err) {
             Tobago.log->write(Log::ERROR) << "OSXPlayer::enableTextureCache: error at CVOpenGLESTextureCacheCreate: " << err;
@@ -303,12 +356,12 @@ void OSXPlayer::initTextureCache() {
     unsigned int textureCacheID;
     
     err = CVOpenGLTextureCacheCreateTextureFromImage(NULL,
-                                                     _videoTextureCache,
+                                                     _videoTextureCachea,
                                                      imageBuffer,
                                                      NULL,
-                                                     &_videoTextureRef);
+                                                     &_videoTextureRefa);
     
-    textureCacheID = CVOpenGLTextureGetName(_videoTextureRef);
+    textureCacheID = CVOpenGLTextureGetName(_videoTextureRefa);
     
     texture = new Texture(GL_TEXTURE_RECTANGLE_ARB, videoTextureW, videoTextureH, 0, textureCacheID);
     texture->setMagnificationFilter(GL_LINEAR);

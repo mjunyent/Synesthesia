@@ -7,6 +7,7 @@
 #include "Tobago/Tobago.h"
 #include "Tobago/init/ContextGLFW.h"
 #include "VFO/Player/OSX/ofxAVFoundationVideoPlayer.h"
+#include "VFO/Player/OSXPlayer.h"
 
 int main(int argc, const char * argv[]) {
 //    ofxAVFoundationVideoPlayer testplayer = ofxAVFoundationVideoPlayer();
@@ -16,8 +17,13 @@ int main(int argc, const char * argv[]) {
     Tobago.init(&context);
     Tobago.use(0);
 
-    ofxAVFoundationVideoPlayer player = ofxAVFoundationVideoPlayer();
-    player.loadMovie("/Users/marc/Downloads/IMG_0376.MOV");
+//    ofxAVFoundationVideoPlayer player = ofxAVFoundationVideoPlayer();
+//    player.loadMovie("/Users/marc/Downloads/IMG_0376.MOV");
+//    player.play();
+    
+    OSXPlayer player;
+    player.enableTextureCache();
+    player.load("/Users/marc/Downloads/IMG_0376.MOV");
     player.play();
 
     Shader s;
@@ -46,7 +52,7 @@ int main(int argc, const char * argv[]) {
     vao.addIBO(&qi);
 
     Texture *tt;
-    player.setPixelFormat(GL_RGBA);
+//    player.setPixelFormat(GL_RGBA);
     
 //    Tobago.log->setOutput(&cout);
     (*Tobago.log)(Log::DEBUG) << "UAU goes!";

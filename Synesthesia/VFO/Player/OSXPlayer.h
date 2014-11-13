@@ -48,12 +48,11 @@ public:
     void firstFrame();
     void nextFrame();
     void previousFrame();
-
     
     bool enableTextureCache();
     void disableTextureCache();
-    void initTextureCache();
-//    long framecount();
+
+    //TODO loop state
     
 protected:
     void* videoPlayer;
@@ -66,6 +65,8 @@ protected:
 
     GLubyte* pixels;
     Texture* texture;
+    
+    void initTextureCache();
 };
 
 

@@ -24,6 +24,11 @@ glm::vec2 screen2normalized(glm::vec2 screenCoords);
 glm::vec2 viewPortSize();
 glm::vec4 viewPort();
 
+template<typename T>
+T clamp(const T &v, const T &mi, const T &ma) {
+    return std::min(std::max(v, mi), ma);
+}
+
 double randValue(float min, float max);
 
 template<typename T>
