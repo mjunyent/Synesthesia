@@ -3,7 +3,7 @@
 
 void TobagoInitGLFW(int major, int minor) {
 	if(!glfwInit()) {
-		Tobago.log->write(ERROR) << "Couldn't init GLFW";
+		Tobago.log->write(Log::ERROR) << "Couldn't init GLFW";
 		exit(EXIT_FAILURE);
 	}
 
@@ -72,7 +72,7 @@ void ContextGLFW::init() {
 //    glfwSetCursorPosCallback(window, glfw_cursorPos_callback);
 
 	if(!window) {
-		Tobago.log->write(ERROR) << "GLFW could not create window " << windowName.c_str();
+		Tobago.log->write(Log::ERROR) << "GLFW could not create window " << windowName.c_str();
 	}
 
 	glfwMakeContextCurrent(window);
@@ -172,7 +172,7 @@ void glfw_cursorPos_callback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 void glfw_error_callback(int error, const char* description) {
-	Tobago.log->write(ERROR) << "GLFW ERROR CALLBACK: " << description;
+	Tobago.log->write(Log::ERROR) << "GLFW ERROR CALLBACK: " << description;
 }
 
 #endif

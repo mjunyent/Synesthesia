@@ -18,7 +18,7 @@ Shader::~Shader() {
 bool Shader::loadFromFile(GLenum type, const char* filename) {
 	std::string buffer;
 	if(!readFile(filename, buffer)) {
-		Tobago.log->write(ERROR) << "Could not open " << filename << " shader file.";
+		Tobago.log->write(Log::ERROR) << "Could not open " << filename << " shader file.";
 		return false;
 	}
 
@@ -56,13 +56,13 @@ void Shader::use() {
 
 void Shader::addUniform(const string& uniform) {
 	GLint uid = glGetUniformLocation(p, uniform.c_str());
-	if(uid == -1) Tobago.log->write(WARNING) << "Uniform not found: " << uniform;
+	if(uid == -1) Tobago.log->write(Log::WARNING) << "Uniform not found: " << uniform;
 	uniformList[uniform] = uid;
 }
 
 void Shader::addAttribute(const string& attribute) {
 	GLint aid = glGetAttribLocation(p, attribute.c_str());
-	if(aid == -1) Tobago.log->write(WARNING) << "Attribute not found: " << attribute;
+	if(aid == -1) Tobago.log->write(Log::WARNING) << "Attribute not found: " << attribute;
 	attributeList[attribute] = aid;
 }
 
@@ -134,7 +134,7 @@ bool Shader::readFile(const char* filename, std::string& buffer) {
 				buffer.append(includeFile);
 				buffer.append("\r\n");
 				if(!readFile(includeFile.c_str(), buffer)) {
-					Tobago.log->write(WARNING) << "Could not open shader file: " << includeFile << " included from " << filename;
+					Tobago.log->write(Log::WARNING) << "Could not open shader file: " << includeFile << " included from " << filename;
 				}
 				buffer.append("//End of included file\r\n");
 		} else {
@@ -158,7 +158,7 @@ bool Shader::printShaderInfoLog(GLuint shader, const char* source) {
     {
         GLchar *infoLog = new GLchar[infologLength];
         glGetShaderInfoLog(shader, infologLength, &charsWritten, infoLog);
-		Tobago.log->write(ERROR) << "Shader compiling error:" << std::endl << infoLog << "Full shader dump: " << endl << source << "END of Shader dump" << endl;
+		Tobago.log->write(Log::ERROR) << "Shader compiling error:" << std::endl << infoLog << "Full shader dump: " << endl << source << "END of Shader dump" << endl;
         delete [] infoLog;
 		return true;
     }
@@ -176,7 +176,7 @@ bool Shader::printProgramInfoLog(GLuint program) {
     {
 		GLchar *infoLog = new GLchar[infologLength];
         glGetProgramInfoLog(program, infologLength, &charsWritten, infoLog);
-		Tobago.log->write(ERROR) << "Shader program linking error:" << infoLog;
+		Tobago.log->write(Log::ERROR) << "Shader program linking error:" << infoLog;
 		delete [] infoLog;
 		return true;
     }

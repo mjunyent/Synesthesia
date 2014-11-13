@@ -6,7 +6,7 @@
 #include <iostream>
 #include "Tobago/Tobago.h"
 #include "Tobago/init/ContextGLFW.h"
-#include "ofxAVFoundationVideoPlayer.h"
+#include "VFO/Player/OSX/ofxAVFoundationVideoPlayer.h"
 
 int main(int argc, const char * argv[]) {
 //    ofxAVFoundationVideoPlayer testplayer = ofxAVFoundationVideoPlayer();
@@ -47,6 +47,9 @@ int main(int argc, const char * argv[]) {
 
     Texture *tt;
     player.setPixelFormat(GL_RGBA);
+    
+//    Tobago.log->setOutput(&cout);
+    (*Tobago.log)(Log::DEBUG) << "UAU goes!";
 
     while(Tobago.enabled(0)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

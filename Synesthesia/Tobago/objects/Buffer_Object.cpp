@@ -52,7 +52,7 @@ void BO::copy(BO *from) {
 
 	glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, size);
 
-	if(glGetError() != 0) Tobago.log->write(ERROR) << "BO copy error";
+	if(glGetError() != 0) Tobago.log->write(Log::ERROR) << "BO copy error";
 }
 
 //http://www.opengl.org/wiki/GLAPI/glMapBufferRange

@@ -58,7 +58,7 @@ void Texture::loadFromPNG(const char* filename) {
 	unsigned error;
 
 	error = LodePNG_decode32_file(&image, &w, &h, filename);
-	if(error) Tobago.log->write(ERROR) << "Error loading PNG texture: " << filename;
+	if(error) Tobago.log->write(Log::ERROR) << "Error loading PNG texture: " << filename;
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
 	setData((int)w, (int)h, image);
@@ -257,7 +257,7 @@ void oldTBO::load(const char* filename, bool goodfiltering) {
 	unsigned error;
 
 	error = LodePNG_decode32_file(&image, &w, &h, filename);
-	if(error) TOBAGO::log.write(ERROR) << "Error loading PNG";
+	if(error) TOBAGO::log.write(Log::ERROR) << "Error loading PNG";
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
 
 	this->width = w;

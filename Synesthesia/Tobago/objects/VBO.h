@@ -42,7 +42,7 @@ public:
 		} else if(std::is_same<T, unsigned char>::value) {
 			type = GL_UNSIGNED_BYTE;
 		} else {
-			Tobago.log->write(ERROR) << "VBO datatype not valid.";
+			Tobago.log->write(Log::ERROR) << "VBO datatype not valid.";
 		}
 	}
 

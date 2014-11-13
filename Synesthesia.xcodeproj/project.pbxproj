@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		49175CB119F4F943000FBC15 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49175CB019F4F943000FBC15 /* main.cpp */; };
-		49175CB919F4F96F000FBC15 /* VideoFetcher.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49175CB819F4F96F000FBC15 /* VideoFetcher.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4958BAAC19F6DEDB00DE1837 /* OFAVFoundationVideoPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4958BAAB19F6DEDB00DE1837 /* OFAVFoundationVideoPlayerView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4958BAAF19F6DF6A00DE1837 /* OFAVFoundationVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4958BAAE19F6DF6A00DE1837 /* OFAVFoundationVideoPlayer.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		49479B631A13BEA100EE922E /* OFAVFoundationVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 49479B5E1A13BEA100EE922E /* OFAVFoundationVideoPlayer.m */; };
+		49479B641A13BEA100EE922E /* OFAVFoundationVideoPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 49479B601A13BEA100EE922E /* OFAVFoundationVideoPlayerView.m */; };
+		49479B651A13BEA100EE922E /* ofxAVFoundationVideoPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49479B621A13BEA100EE922E /* ofxAVFoundationVideoPlayer.mm */; };
+		49479B6B1A13C09A00EE922E /* OSXPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49479B691A13C09A00EE922E /* OSXPlayer.mm */; };
 		4958BAB119F6DF9900DE1837 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4958BAB019F6DF9900DE1837 /* AVFoundation.framework */; };
 		4958BAB319F6DF9E00DE1837 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4958BAB219F6DF9E00DE1837 /* AVKit.framework */; };
 		4958BAB519F6DFAE00DE1837 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4958BAB419F6DFAE00DE1837 /* CoreFoundation.framework */; };
@@ -31,7 +32,6 @@
 		49B015D419F938BF00112A25 /* SoundHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49B015D219F938BF00112A25 /* SoundHandler.cpp */; };
 		49B015D719F93E3600112A25 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49B015D519F93E3600112A25 /* libGLEW.a */; };
 		49B015D819F93E3600112A25 /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49B015D619F93E3600112A25 /* libglfw3.a */; };
-		49D7A33B19F9680500F59D6F /* ofxAVFoundationVideoPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49D7A33A19F9680500F59D6F /* ofxAVFoundationVideoPlayer.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,12 +49,15 @@
 /* Begin PBXFileReference section */
 		49175CAD19F4F943000FBC15 /* Synesthesia */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Synesthesia; sourceTree = BUILT_PRODUCTS_DIR; };
 		49175CB019F4F943000FBC15 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		49175CB719F4F96F000FBC15 /* VideoFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoFetcher.h; sourceTree = "<group>"; };
-		49175CB819F4F96F000FBC15 /* VideoFetcher.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VideoFetcher.mm; sourceTree = "<group>"; };
-		4958BAAA19F6DEDB00DE1837 /* OFAVFoundationVideoPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OFAVFoundationVideoPlayerView.h; sourceTree = "<group>"; };
-		4958BAAB19F6DEDB00DE1837 /* OFAVFoundationVideoPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OFAVFoundationVideoPlayerView.m; sourceTree = "<group>"; };
-		4958BAAD19F6DF6A00DE1837 /* OFAVFoundationVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OFAVFoundationVideoPlayer.h; sourceTree = "<group>"; };
-		4958BAAE19F6DF6A00DE1837 /* OFAVFoundationVideoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OFAVFoundationVideoPlayer.m; sourceTree = "<group>"; };
+		49479B5D1A13BEA100EE922E /* OFAVFoundationVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OFAVFoundationVideoPlayer.h; sourceTree = "<group>"; };
+		49479B5E1A13BEA100EE922E /* OFAVFoundationVideoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OFAVFoundationVideoPlayer.m; sourceTree = "<group>"; };
+		49479B5F1A13BEA100EE922E /* OFAVFoundationVideoPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OFAVFoundationVideoPlayerView.h; sourceTree = "<group>"; };
+		49479B601A13BEA100EE922E /* OFAVFoundationVideoPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OFAVFoundationVideoPlayerView.m; sourceTree = "<group>"; };
+		49479B611A13BEA100EE922E /* ofxAVFoundationVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxAVFoundationVideoPlayer.h; sourceTree = "<group>"; };
+		49479B621A13BEA100EE922E /* ofxAVFoundationVideoPlayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ofxAVFoundationVideoPlayer.mm; sourceTree = "<group>"; };
+		49479B671A13BEEC00EE922E /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
+		49479B691A13C09A00EE922E /* OSXPlayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OSXPlayer.mm; sourceTree = "<group>"; };
+		49479B6A1A13C09A00EE922E /* OSXPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSXPlayer.h; sourceTree = "<group>"; };
 		4958BAB019F6DF9900DE1837 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		4958BAB219F6DF9E00DE1837 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		4958BAB419F6DFAE00DE1837 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -92,8 +95,6 @@
 		49B015D319F938BF00112A25 /* SoundHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundHandler.h; sourceTree = "<group>"; };
 		49B015D519F93E3600112A25 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = libs/libGLEW.a; sourceTree = "<group>"; };
 		49B015D619F93E3600112A25 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = libs/libglfw3.a; sourceTree = "<group>"; };
-		49D7A33919F9680500F59D6F /* ofxAVFoundationVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxAVFoundationVideoPlayer.h; sourceTree = "<group>"; };
-		49D7A33A19F9680500F59D6F /* ofxAVFoundationVideoPlayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ofxAVFoundationVideoPlayer.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,18 +136,43 @@
 		49175CAF19F4F943000FBC15 /* Synesthesia */ = {
 			isa = PBXGroup;
 			children = (
+				49479B5A1A13BEA100EE922E /* VFO */,
 				49B0159B19F91D2000112A25 /* Tobago */,
 				49175CB019F4F943000FBC15 /* main.cpp */,
-				49175CB719F4F96F000FBC15 /* VideoFetcher.h */,
-				49175CB819F4F96F000FBC15 /* VideoFetcher.mm */,
-				4958BAAA19F6DEDB00DE1837 /* OFAVFoundationVideoPlayerView.h */,
-				4958BAAB19F6DEDB00DE1837 /* OFAVFoundationVideoPlayerView.m */,
-				4958BAAD19F6DF6A00DE1837 /* OFAVFoundationVideoPlayer.h */,
-				4958BAAE19F6DF6A00DE1837 /* OFAVFoundationVideoPlayer.m */,
-				49D7A33919F9680500F59D6F /* ofxAVFoundationVideoPlayer.h */,
-				49D7A33A19F9680500F59D6F /* ofxAVFoundationVideoPlayer.mm */,
 			);
 			path = Synesthesia;
+			sourceTree = "<group>";
+		};
+		49479B5A1A13BEA100EE922E /* VFO */ = {
+			isa = PBXGroup;
+			children = (
+				49479B5B1A13BEA100EE922E /* Player */,
+			);
+			path = VFO;
+			sourceTree = "<group>";
+		};
+		49479B5B1A13BEA100EE922E /* Player */ = {
+			isa = PBXGroup;
+			children = (
+				49479B671A13BEEC00EE922E /* Player.h */,
+				49479B6A1A13C09A00EE922E /* OSXPlayer.h */,
+				49479B691A13C09A00EE922E /* OSXPlayer.mm */,
+				49479B5C1A13BEA100EE922E /* OSX */,
+			);
+			path = Player;
+			sourceTree = "<group>";
+		};
+		49479B5C1A13BEA100EE922E /* OSX */ = {
+			isa = PBXGroup;
+			children = (
+				49479B5D1A13BEA100EE922E /* OFAVFoundationVideoPlayer.h */,
+				49479B5E1A13BEA100EE922E /* OFAVFoundationVideoPlayer.m */,
+				49479B5F1A13BEA100EE922E /* OFAVFoundationVideoPlayerView.h */,
+				49479B601A13BEA100EE922E /* OFAVFoundationVideoPlayerView.m */,
+				49479B611A13BEA100EE922E /* ofxAVFoundationVideoPlayer.h */,
+				49479B621A13BEA100EE922E /* ofxAVFoundationVideoPlayer.mm */,
+			);
+			path = OSX;
 			sourceTree = "<group>";
 		};
 		4958BAB819F6DFEB00DE1837 /* Frameworks */ = {
@@ -304,8 +330,11 @@
 			files = (
 				49B015CF19F91D2000112A25 /* VAO.cpp in Sources */,
 				49175CB119F4F943000FBC15 /* main.cpp in Sources */,
+				49479B651A13BEA100EE922E /* ofxAVFoundationVideoPlayer.mm in Sources */,
+				49479B6B1A13C09A00EE922E /* OSXPlayer.mm in Sources */,
 				49B015CD19F91D2000112A25 /* Shader.cpp in Sources */,
 				49B015C619F91D2000112A25 /* ContextGLFW.cpp in Sources */,
+				49479B641A13BEA100EE922E /* OFAVFoundationVideoPlayerView.m in Sources */,
 				49B015C919F91D2000112A25 /* FBO.cpp in Sources */,
 				49B015CA19F91D2000112A25 /* jpgd.cpp in Sources */,
 				49B015D419F938BF00112A25 /* SoundHandler.cpp in Sources */,
@@ -313,14 +342,11 @@
 				49B015CE19F91D2000112A25 /* TBO.cpp in Sources */,
 				49B015D019F91D2000112A25 /* basic.cpp in Sources */,
 				49B015C719F91D2000112A25 /* initTobago.cpp in Sources */,
-				4958BAAF19F6DF6A00DE1837 /* OFAVFoundationVideoPlayer.m in Sources */,
 				49B015C419F91D2000112A25 /* FontHandler.cpp in Sources */,
-				49175CB919F4F96F000FBC15 /* VideoFetcher.mm in Sources */,
 				49B015CC19F91D2000112A25 /* lodepng.cpp in Sources */,
-				49D7A33B19F9680500F59D6F /* ofxAVFoundationVideoPlayer.mm in Sources */,
+				49479B631A13BEA100EE922E /* OFAVFoundationVideoPlayer.m in Sources */,
 				49B015C819F91D2000112A25 /* Buffer_Object.cpp in Sources */,
 				49B015D119F91D2000112A25 /* log.cpp in Sources */,
-				4958BAAC19F6DEDB00DE1837 /* OFAVFoundationVideoPlayerView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -417,6 +443,7 @@
 					"$(PROJECT_DIR)/libs",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Synesthesia/";
 			};
 			name = Debug;
 		};
@@ -435,6 +462,7 @@
 					"$(PROJECT_DIR)/libs",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Synesthesia/";
 			};
 			name = Release;
 		};

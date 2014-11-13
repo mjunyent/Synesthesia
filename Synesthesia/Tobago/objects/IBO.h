@@ -20,7 +20,7 @@ public:
 		} else if(std::is_same<T, unsigned int>::value) {
 			type = GL_UNSIGNED_INT;
 		} else {
-			Tobago.log->write(ERROR) << "IBO datatype not valid.";
+			Tobago.log->write(Log::ERROR) << "IBO datatype not valid.";
 		}
 	}
 
@@ -38,7 +38,7 @@ public:
 		} else if(std::is_same<T, unsigned int>::value) {
 			type = GL_UNSIGNED_INT;
 		} else {
-			Tobago.log->write(ERROR) << "IBO datatype not valid.";
+			Tobago.log->write(Log::ERROR) << "IBO datatype not valid.";
 		}
 	}
 

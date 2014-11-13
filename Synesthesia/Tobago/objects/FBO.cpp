@@ -53,7 +53,7 @@ void FBO::setDrawBuffers() {
 	drawBuffers = new GLenum[16];
 	int drawBuffersSize = 16;
 	for(int i=COLOR0; i<=COLOR15; i++) {
-		if(textures[i] = NULL) drawBuffers[i-COLOR0] = GL_NONE;
+		if(textures[i] == NULL) drawBuffers[i-COLOR0] = GL_NONE;
 		else drawBuffers[i-COLOR0] = GL_COLOR_ATTACHMENT0+(i-COLOR0);
 	}
 }
@@ -135,36 +135,36 @@ bool FBO::isFBOcomplete() {
 	if(check_result != GL_FRAMEBUFFER_COMPLETE) {
 		switch (check_result) {
 			case GL_FRAMEBUFFER_UNDEFINED:
-				Tobago.log->write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_UNDEFINED";
+				Tobago.log->write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_UNDEFINED";
 				break;
 			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-				Tobago.log->write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
+				Tobago.log->write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
 				break;
 			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-				Tobago.log->write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
+				Tobago.log->write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
 				break;
 			case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-				Tobago.log->write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
+				Tobago.log->write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
 				break;
 			case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-				Tobago.log->write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER";
+				Tobago.log->write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER";
 				break;
 			case GL_FRAMEBUFFER_UNSUPPORTED:
-				Tobago.log->write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_UNSUPPORTED";
+				Tobago.log->write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_UNSUPPORTED";
 				break;
 			case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-				Tobago.log->write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE";
+				Tobago.log->write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE";
 				break;
 			case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-				Tobago.log->write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
+				Tobago.log->write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
 				break;
 			case GL_FRAMEBUFFER_COMPLETE:
-				Tobago.log->write(ERROR) << "FBO Creation ok, why is this in LOG?";
+				Tobago.log->write(Log::ERROR) << "FBO Creation ok, why is this in LOG?";
 				break;
 			case 0:
-				Tobago.log->write(ERROR) << "FBO Creation error: 0 returned";
+				Tobago.log->write(Log::ERROR) << "FBO Creation error: 0 returned";
 			default:
-				Tobago.log->write(ERROR) << "FBO Creation error: Error not recognised";
+				Tobago.log->write(Log::ERROR) << "FBO Creation error: Error not recognised";
 			break;
 		}
 		return false;
@@ -228,7 +228,7 @@ oldFBO::oldFBO(GLsizei width, GLsizei height, bool dbo, int ntbo, bool *qualite)
 	int maxDrawBuffers;
 	glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
 	if(maxDrawBuffers <= ntbo) {
-		TOBAGO::log.write(WARNING) << "FBO: Be careful not to exceed MAX_DRAW_BUFFERS number!";
+		TOBAGO::log.write(Log::WARNING) << "FBO: Be careful not to exceed MAX_DRAW_BUFFERS number!";
 	}
 
 	glGenFramebuffers(1, &theID);
@@ -260,7 +260,7 @@ oldFBO::oldFBO(GLsizei width, GLsizei height, bool dbo, int ntbo, bool *qualite)
 		status = false;
 	} else status = true;
 
-	if(!status) TOBAGO::log.write(ERROR) << "Error creating FBO";
+	if(!status) TOBAGO::log.write(Log::ERROR) << "Error creating FBO";
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -274,7 +274,7 @@ oldFBO::oldFBO(GLsizei width, GLsizei height, vector<oldTBO*> texs, oldTBO *dept
 	int maxDrawBuffers;
 	glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
 	if(maxDrawBuffers <= ntbo) {
-		TOBAGO::log.write(WARNING) << "FBO: Be careful not to exceed MAX_DRAW_BUFFERS number!";
+		TOBAGO::log.write(Log::WARNING) << "FBO: Be careful not to exceed MAX_DRAW_BUFFERS number!";
 	}
 
 	glGenFramebuffers(1, &theID);
@@ -305,7 +305,7 @@ oldFBO::oldFBO(GLsizei width, GLsizei height, vector<oldTBO*> texs, oldTBO *dept
 		status = false;
 	} else status = true;
 
-	if(!status) TOBAGO::log.write(ERROR) << "Error creating FBO";
+	if(!status) TOBAGO::log.write(Log::ERROR) << "Error creating FBO";
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -348,36 +348,36 @@ void oldFBO::shout_error(GLenum error) {
 	switch (error)
 	{
 		case GL_FRAMEBUFFER_UNDEFINED:
-			TOBAGO::log.write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_UNDEFINED";
+			TOBAGO::log.write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_UNDEFINED";
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-			TOBAGO::log.write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
+			TOBAGO::log.write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-			TOBAGO::log.write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
+			TOBAGO::log.write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-			TOBAGO::log.write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
+			TOBAGO::log.write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-			TOBAGO::log.write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER";
+			TOBAGO::log.write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER";
 			break;
 		case GL_FRAMEBUFFER_UNSUPPORTED:
-			TOBAGO::log.write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_UNSUPPORTED";
+			TOBAGO::log.write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_UNSUPPORTED";
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-			TOBAGO::log.write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE";
+			TOBAGO::log.write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE";
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-			TOBAGO::log.write(ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
+			TOBAGO::log.write(Log::ERROR) << "FBO Creation error: GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
 			break;
 		case GL_FRAMEBUFFER_COMPLETE:
-			TOBAGO::log.write(ERROR) << "FBO Creation ok, why is this in LOG?";
+			TOBAGO::log.write(Log::ERROR) << "FBO Creation ok, why is this in LOG?";
 			break;
 		case 0:
-			TOBAGO::log.write(ERROR) << "FBO Creation error: 0 returned";
+			TOBAGO::log.write(Log::ERROR) << "FBO Creation error: 0 returned";
 		default:
-			TOBAGO::log.write(ERROR) << "FBO Creation error: Error not recognised";
+			TOBAGO::log.write(Log::ERROR) << "FBO Creation error: Error not recognised";
 		break;
 	}
 	/* http://www.opengl.org/sdk/docs/man3/xhtml/glCheckFramebufferStatus.xml

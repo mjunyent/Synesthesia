@@ -12,8 +12,7 @@ CVOpenGLTextureCacheRef _videoTextureCache = NULL;
 CVOpenGLTextureRef _videoTextureRef = NULL;
 
 ofxAVFoundationVideoPlayer::ofxAVFoundationVideoPlayer() {
-    if(CGLGetCurrentContext() == NULL) NSLog(@"ERROR!!!!");
-    else NSLog(@"GUAI");
+    if(CGLGetCurrentContext() == NULL) Tobago.log->write(Log::WARNING) << "ofxAVFoundationVideoPlayer: no GL context found";
 
 	videoPlayer = NULL;
 	pixelsRGB = NULL;
@@ -48,7 +47,6 @@ void ofxAVFoundationVideoPlayer::disableTextureCache() {
 }
 
 bool ofxAVFoundationVideoPlayer::loadMovie(std::string name) {
-	
     if(!videoPlayer) {
         videoPlayer = [[OFAVFoundationVideoPlayer alloc] init];
         [(OFAVFoundationVideoPlayer *)videoPlayer setWillBeUpdatedExternally:YES];
@@ -157,7 +155,7 @@ void ofxAVFoundationVideoPlayer::update() {
 //--------------------------------------------------------------
 void ofxAVFoundationVideoPlayer::play() {
     if(videoPlayer == NULL) {
-        Tobago.log->write(INFO) << "play(): video not loaded";
+        Tobago.log->write(Log::INFO) << "play(): video not loaded";
     }
     
 	[(OFAVFoundationVideoPlayer *)videoPlayer play];
@@ -364,7 +362,7 @@ Texture * ofxAVFoundationVideoPlayer::getTexture() {
                               [(OFAVFoundationVideoPlayer *)videoPlayer getHeight],
                               internalGLFormat);
         internalGLFormat = internalGLFormatCopy;*/
-        Tobago.log->write(WARNING) << "NO ACCELERATED TEXTURE SUPPORTED!";
+        Tobago.log->write(Log::WARNING) << "NO ACCELERATED TEXTURE SUPPORTED!";
     }
     
     bUpdateTexture = false;
@@ -549,7 +547,7 @@ void ofxAVFoundationVideoPlayer::setVolume(float volume) {
         return;
     }
 	if ( volume > 1.0f ){
-        Tobago.log->write(WARNING) << "setVolume(): expected range is 0-1, limiting requested volume " << volume << " to 1.0";
+        Tobago.log->write(Log::WARNING) << "setVolume(): expected range is 0-1, limiting requested volume " << volume << " to 1.0";
 		volume = 1.0f;
 	}
     [((OFAVFoundationVideoPlayer *)videoPlayer) setVolume:volume];

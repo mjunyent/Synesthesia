@@ -12,8 +12,8 @@
 #include <string>
 #include "Tobago/Tobago.h"
 
-class ofxAVFoundationVideoPlayer { // : public ofBaseVideoPlayer {
-	
+class ofxAVFoundationVideoPlayer {
+
 public:
 	
 	ofxAVFoundationVideoPlayer();

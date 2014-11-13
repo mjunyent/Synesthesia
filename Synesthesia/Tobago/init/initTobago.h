@@ -4,6 +4,7 @@
 
 #include <GL/glew.h>
 
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp> //GLM Libs...
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/vector_angle.hpp>

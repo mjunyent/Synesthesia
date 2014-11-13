@@ -40,7 +40,7 @@ void TobagoHandler::initContextsGlewFmod() {
 	glewExperimental=GL_TRUE;
 	GLenum err = glewInit();
 	if(err != GLEW_OK) {
-		log->write(ERROR) << "glewInit fail'd: " << glewGetErrorString(err);
+		log->write(Log::ERROR) << "glewInit fail'd: " << glewGetErrorString(err);
 		exit( EXIT_FAILURE );
 	}
 
