@@ -19,6 +19,7 @@ OSXPlayer::OSXPlayer() {
     updateTexture = false;
     textureCacheEnabled = false;
     pixels = NULL;
+    texture = NULL;
 }
 
 OSXPlayer::~OSXPlayer() {
@@ -39,7 +40,9 @@ void OSXPlayer::load(std::string url) {
     
     if(pixels != NULL) free(pixels);
     pixels = NULL;
-    
+    if(texture != NULL) delete texture;
+    texture = NULL;
+
     updatePixels = true;
     updateTexture = true;
 }
@@ -56,6 +59,8 @@ void OSXPlayer::close() {
     textureCacheEnabled = false;
     if(pixels != NULL) free(pixels);
     pixels = NULL;
+    if(texture != NULL) delete texture;
+    texture = NULL;
 }
 
 void OSXPlayer::update() {
@@ -244,7 +249,27 @@ Texture* OSXPlayer::getTexture() {
     if(textureCacheSupported && textureCacheEnabled) {
         initTextureCache();
     } else {
+        /**
+         *  no video texture cache.
+         *  load texture from pixels.
+         *  this method is the slower alternative.
+         */
         
+        if(texture == NULL) {
+            int maxTextureSize = 0;
+            glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+            
+            if([(OFAVFoundationVideoPlayer *)videoPlayer getWidth] > maxTextureSize ||
+               [(OFAVFoundationVideoPlayer *)videoPlayer getHeight] > maxTextureSize) {
+                Tobago.log->write(Log::WARNING) << "OSXPlayer::getTexture: video image is bigger than max supported texture size " << maxTextureSize;
+                return NULL;
+            }
+            
+            texture = new Texture(GL_TEXTURE_RECTANGLE_ARB);
+        }
+        texture->setData([(OFAVFoundationVideoPlayer *)videoPlayer getWidth],
+                         [(OFAVFoundationVideoPlayer *)videoPlayer getHeight],
+                         getPixels());
     }
 
     updateTexture = false;
@@ -324,7 +349,21 @@ bool OSXPlayer::enableTextureCache() {
 }
 
 void OSXPlayer::disableTextureCache() {
-    //TODO
+    textureCacheEnabled = false;
+    
+    if(_videoTextureRefa != NULL) {
+        CVOpenGLTextureRelease(_videoTextureRefa);
+        _videoTextureRefa = NULL;
+    }
+    
+    if(_videoTextureCachea != NULL) {
+        CVOpenGLTextureCacheRelease(_videoTextureCachea);
+        _videoTextureCachea = NULL;
+    }
+    if(texture != NULL) {
+        delete texture;
+        texture = NULL;
+    }
 }
 
 void OSXPlayer::initTextureCache() {
@@ -363,17 +402,21 @@ void OSXPlayer::initTextureCache() {
     
     textureCacheID = CVOpenGLTextureGetName(_videoTextureRefa);
     
-    texture = new Texture(GL_TEXTURE_RECTANGLE_ARB, videoTextureW, videoTextureH, 0, textureCacheID);
-    texture->setMagnificationFilter(GL_LINEAR);
-    texture->setMinificationFilter(GL_LINEAR);
-    
+    if(texture == NULL) {
+        texture = new Texture(GL_TEXTURE_RECTANGLE_ARB, videoTextureW, videoTextureH, 0, textureCacheID);
+    } else texture->id = textureCacheID;
+
     if(err) {
         Tobago.log->write(Log::ERROR) << "OSXPlayer::initTextureCache: error at CVOpenGLTextureCacheCreateTextureFromImage: " << err;
     }
     
     CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
     
-    //TODO a few more tweaks and things...
+    CVOpenGLTextureCacheFlush(_videoTextureCachea, 0);
+    if(_videoTextureRefa) {
+        CVOpenGLTextureRelease(_videoTextureRefa);
+        _videoTextureRefa = NULL;
+    }
 }
 
 
