@@ -10,12 +10,15 @@
 #define __Synesthesia__Player__
 
 #include <string>
+#include "Tobago/Tobago.h"
 
 class Player {
 public:
     //Player() = 0;
     
     virtual void load(std::string url) = 0;
+    virtual void loadAsync(std::string url) = 0;
+    virtual void setAudioSampling(bool onoff) = 0;
     virtual void close() = 0;
     virtual void update() = 0;
 
@@ -23,6 +26,7 @@ public:
     virtual void pause() = 0;
     virtual void stop() = 0;
 
+    virtual bool isError() = 0;
     virtual bool isLoaded() = 0;
     virtual bool isPaused() = 0;
     virtual bool isPlaying() = 0;
@@ -46,6 +50,8 @@ public:
     virtual void firstFrame() = 0;
     virtual void nextFrame() = 0;
     virtual void previousFrame() = 0;
+    
+    virtual void syncNextFrame() = 0;
 };
 
 

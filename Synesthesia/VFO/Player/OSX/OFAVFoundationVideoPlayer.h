@@ -57,6 +57,7 @@
     
     BOOL bWillBeUpdatedExternally;
     BOOL bReady;
+    BOOL bError;
     BOOL bPlayStateBeforeLoad;
     BOOL bUpdateFirstFrame;
     BOOL bNewFrame;
@@ -97,6 +98,7 @@
 - (void)seekToTime:(CMTime)time withTolerance:(CMTime)tolerance;
 
 - (BOOL)isReady;
+- (BOOL)isError;
 - (BOOL)isPlaying;
 - (BOOL)isNewFrame;
 - (BOOL)isFinished;

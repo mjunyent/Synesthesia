@@ -18,6 +18,8 @@ public:
     ~OSXPlayer();
     
     void load(std::string url);
+    void loadAsync(std::string url);
+    void setAudioSampling(bool onoff); //by default false.
     void close();
     void update();
     
@@ -25,6 +27,7 @@ public:
     void pause();
     void stop();
 
+    bool isError();
     bool isLoaded();
     bool isPaused();
     bool isPlaying();
@@ -48,11 +51,16 @@ public:
     void firstFrame();
     void nextFrame();
     void previousFrame();
-    
+
+    void syncNextFrame();
+
     bool enableTextureCache();
     void disableTextureCache();
 
-    //TODO loop state
+    void pollEvents();
+    
+    //TODO loop state && finished state
+    //todo add seeking state.
     
 protected:
     void* videoPlayer;

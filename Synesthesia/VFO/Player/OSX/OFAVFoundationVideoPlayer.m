@@ -60,6 +60,7 @@ static const NSString * ItemStatusContext;
 
         bWillBeUpdatedExternally = NO;
         bReady = NO;
+        bError = NO;
         bPlayStateBeforeLoad = NO;
         bUpdateFirstFrame = YES;
         bNewFrame = NO;
@@ -149,7 +150,7 @@ static const NSString * ItemStatusContext;
     
     [self.asset loadValuesAsynchronouslyForKeys:[NSArray arrayWithObject:kTracksKey] completionHandler:^{
         dispatch_async(dispatch_get_main_queue(), ^{
-            
+
             NSError * error = nil;
             AVKeyValueStatus status = [self.asset statusOfValueForKey:kTracksKey error:&error];
             
@@ -157,15 +158,18 @@ static const NSString * ItemStatusContext;
                 
                 duration = [self.asset duration];
                 if(CMTimeCompare(duration, kCMTimeZero) == 0) {
+                    bError = true;
                     return; // duration is zero.
                 }
                 
                 if(!isfinite([self getDurationInSec])) {
+                    bError = true;
                     return; // duration is infinite.
                 }
                 
                 BOOL bOk = [self createAssetReaderWithTimeRange:CMTimeRangeMake(kCMTimeZero, duration)];
                 if(!bOk) {
+                    bError = true;
                     return; // asset reader not created.
                 }
                 
@@ -206,6 +210,7 @@ static const NSString * ItemStatusContext;
             }
             else {
                 NSLog(@"The asset's tracks were not loaded:\n%@", [error localizedDescription]);
+                bError = true;
                 return;
             }
         });
@@ -307,6 +312,7 @@ static const NSString * ItemStatusContext;
 - (void)unloadVideo {
     
     bReady = NO;
+    bError = NO;
     bPlayStateBeforeLoad = NO;
     bUpdateFirstFrame = YES;
     bNewFrame = NO;
@@ -654,6 +660,10 @@ static const NSString * ItemStatusContext;
 //---------------------------------------------------------- states.
 - (BOOL)isReady {
     return bReady;
+}
+
+- (BOOL)isError {
+    return bError;
 }
 
 - (BOOL)isPlaying {

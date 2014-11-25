@@ -45,6 +45,51 @@ void OSXPlayer::load(std::string url) {
 
     updatePixels = true;
     updateTexture = true;
+    
+    while(!isLoaded() && !isError()) {
+        pollEvents();
+    }
+    
+    setAudioSampling(false);
+    
+    if(isError()) Tobago.log->write(Log::INFO) << "OSXPlayer::load could not load video: " << url;
+}
+
+void OSXPlayer::pollEvents() {
+    NSEvent * event;
+
+    do {
+        event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantPast] inMode:NSDefaultRunLoopMode dequeue:YES];
+        [NSApp sendEvent: event];
+    }
+    while(event != nil);
+}
+
+void OSXPlayer::loadAsync(std::string url) {
+    if(!videoPlayer) {
+        videoPlayer = [[OFAVFoundationVideoPlayer alloc] init];
+        [(OFAVFoundationVideoPlayer *)videoPlayer setWillBeUpdatedExternally:YES];
+    }
+    
+    NSString* videoPath = [NSString stringWithUTF8String:url.c_str()];
+    [(OFAVFoundationVideoPlayer*)videoPlayer loadWithPath:videoPath];
+    
+    if(pixels != NULL) free(pixels);
+    pixels = NULL;
+    if(texture != NULL) delete texture;
+    texture = NULL;
+    
+    updatePixels = true;
+    updateTexture = true;
+    
+    setAudioSampling(false);
+}
+
+void OSXPlayer::setAudioSampling(bool onoff) {
+    if(onoff)
+        [((OFAVFoundationVideoPlayer *)videoPlayer) setEnableAudioSampling:YES];
+    else
+        [((OFAVFoundationVideoPlayer *)videoPlayer) setEnableAudioSampling:NO];
 }
 
 void OSXPlayer::close() {
@@ -52,6 +97,7 @@ void OSXPlayer::close() {
         ((OFAVFoundationVideoPlayer *)videoPlayer).delegate = nil;
         [(OFAVFoundationVideoPlayer *)videoPlayer release];
     }
+
     videoPlayer = NULL;
     newFrame = false;
     updatePixels = false;
@@ -109,6 +155,11 @@ void OSXPlayer::stop() {
 
 
 
+
+bool OSXPlayer::isError() {
+    if(videoPlayer == NULL) return false;
+    return [((OFAVFoundationVideoPlayer *) videoPlayer) isError];
+}
 
 bool OSXPlayer::isLoaded() {
     if(videoPlayer == NULL) return false;
@@ -309,7 +360,7 @@ void OSXPlayer::setVolume(float volume) {
 
 void OSXPlayer::firstFrame() {
     if(videoPlayer == NULL) return;
-    [((OFAVFoundationVideoPlayer *)videoPlayer) setPosition:0];
+    [((OFAVFoundationVideoPlayer *)videoPlayer) seekToStart];
 }
 
 void OSXPlayer::nextFrame() {
@@ -320,6 +371,17 @@ void OSXPlayer::nextFrame() {
 void OSXPlayer::previousFrame() {
     int nextFrameNum = clamp(getFrameNum() - 1, 0, getTotalNumFrames());
     setFrame(nextFrameNum);
+}
+
+
+
+
+void OSXPlayer::syncNextFrame() {
+    double sampleTime = [((OFAVFoundationVideoPlayer *)videoPlayer) getCurrentTimeInSec];
+//    double sampleTime2 = [((OFAVFoundationVideoPlayer *)videoPlayer) getVideoSampleTimeInSec];
+    
+    double fps = [((OFAVFoundationVideoPlayer *)videoPlayer) getFrameRate];
+    [((OFAVFoundationVideoPlayer *)videoPlayer) setSynchSampleTimeInSec:sampleTime+1.0/fps];
 }
 
 

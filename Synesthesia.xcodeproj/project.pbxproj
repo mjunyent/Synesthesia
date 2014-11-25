@@ -32,6 +32,7 @@
 		49B015D419F938BF00112A25 /* SoundHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49B015D219F938BF00112A25 /* SoundHandler.cpp */; };
 		49B015D719F93E3600112A25 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49B015D519F93E3600112A25 /* libGLEW.a */; };
 		49B015D819F93E3600112A25 /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49B015D619F93E3600112A25 /* libglfw3.a */; };
+		49F029431A176C5100B355BA /* VideoAsset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49F029411A176C5100B355BA /* VideoAsset.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -95,6 +96,8 @@
 		49B015D319F938BF00112A25 /* SoundHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundHandler.h; sourceTree = "<group>"; };
 		49B015D519F93E3600112A25 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = libs/libGLEW.a; sourceTree = "<group>"; };
 		49B015D619F93E3600112A25 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = libs/libglfw3.a; sourceTree = "<group>"; };
+		49F029411A176C5100B355BA /* VideoAsset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VideoAsset.cpp; sourceTree = "<group>"; };
+		49F029421A176C5100B355BA /* VideoAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoAsset.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +150,8 @@
 			isa = PBXGroup;
 			children = (
 				49479B5B1A13BEA100EE922E /* Player */,
+				49F029411A176C5100B355BA /* VideoAsset.cpp */,
+				49F029421A176C5100B355BA /* VideoAsset.h */,
 			);
 			path = VFO;
 			sourceTree = "<group>";
@@ -338,6 +343,7 @@
 				49B015C919F91D2000112A25 /* FBO.cpp in Sources */,
 				49B015CA19F91D2000112A25 /* jpgd.cpp in Sources */,
 				49B015D419F938BF00112A25 /* SoundHandler.cpp in Sources */,
+				49F029431A176C5100B355BA /* VideoAsset.cpp in Sources */,
 				49B015CB19F91D2000112A25 /* jpge.cpp in Sources */,
 				49B015CE19F91D2000112A25 /* TBO.cpp in Sources */,
 				49B015D019F91D2000112A25 /* basic.cpp in Sources */,
