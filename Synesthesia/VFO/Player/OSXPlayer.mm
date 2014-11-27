@@ -214,6 +214,20 @@ float OSXPlayer::getSpeed() {
     return [((OFAVFoundationVideoPlayer *)videoPlayer) getSpeed];
 }
 
+long OSXPlayer::getWidth() {
+    if(videoPlayer == NULL) return -1;
+    return [((OFAVFoundationVideoPlayer *)videoPlayer) getWidth];
+}
+
+long OSXPlayer::getHeight() {
+    if(videoPlayer == NULL) return -1;
+    return [((OFAVFoundationVideoPlayer *)videoPlayer) getHeight];
+}
+
+int OSXPlayer::getNumChannels() {
+    return 4;
+}
+
 
 
 

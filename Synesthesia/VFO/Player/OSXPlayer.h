@@ -39,6 +39,9 @@ public:
     float getDuration();
     int getTotalNumFrames();
     float getSpeed();
+    long getWidth();
+    long getHeight();
+    int getNumChannels();
 
     unsigned char* getPixels();
     Texture* getTexture();

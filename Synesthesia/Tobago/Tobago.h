@@ -2,6 +2,7 @@
 
 #include "utility/log.h" //simple log class.
 #include "utility/basic.h" //functions to change coordinates sistem (pixel, screen or normalized).
+#include "utility/Colors.h"
 
 #include "objects/Buffer_Object.h" //abstract class to manage buffer objects.
 #include "objects/FBO.h" //framebuffer object class.
@@ -12,3 +13,4 @@
 #include "objects/VAO.h" //Vertex array object class.
 
 #include "handlers/FontHandler.h" //Font manager and text renderer.
+

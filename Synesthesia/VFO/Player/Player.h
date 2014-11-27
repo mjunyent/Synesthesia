@@ -38,6 +38,9 @@ public:
     virtual float getDuration() = 0;
     virtual int getTotalNumFrames() = 0;
     virtual float getSpeed() = 0;
+    virtual long getWidth() = 0;
+    virtual long getHeight() = 0;
+    virtual int getNumChannels() = 0;
 
     virtual unsigned char* getPixels() = 0;
     virtual Texture* getTexture() = 0;

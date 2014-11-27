@@ -12,18 +12,26 @@
 #include <string>
 #include "Player.h"
 
-#ifdef TARGET_OS_MAC
+#ifdef __APPLE__
 #include "OSXPlayer.h"
 #endif
+
 
 class VideoAsset {
 public:
     VideoAsset(std::string url);
 
-    std::string name;
+    bool valid;
+    bool parsed;
+
     std::string url;
-    
+    std::string path;
+    std::string name;
+    std::string extension;
+
     Player* player;
+
+    //class to read info from files and those things.
     //vector<whatever> shotboundaries;
     //whatever histograms;
     //features...
