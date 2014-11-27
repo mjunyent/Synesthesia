@@ -20,6 +20,20 @@
                ReferencedContainer = "container:Synesthesia.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4935546E1A27481A00F435AA"
+               BuildableName = "SynesthesiaApp.app"
+               BlueprintName = "SynesthesiaApp"
+               ReferencedContainer = "container:Synesthesia.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

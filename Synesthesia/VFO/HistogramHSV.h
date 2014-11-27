@@ -14,6 +14,10 @@
 #include <fstream>
 #include <sstream>
 
+#include <OpenCL/cl.h>
+#include <OpenCL/cl_gl_ext.h>
+#include <OpenGL/OpenGL.h>
+
 class HistogramHSV {
 public:
     HistogramHSV(Player* p);
@@ -34,6 +38,15 @@ public:
     int numBins;
     
     long framesize;
+    
+    void iterateCL();
+
+private:
+    bool initCL();
+    
+    cl_context context;
+    
+    
 };
 
 #endif /* defined(__Synesthesia__HistogramHSV__) */

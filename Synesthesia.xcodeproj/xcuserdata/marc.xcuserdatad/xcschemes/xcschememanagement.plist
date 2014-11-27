@@ -4,15 +4,15 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Synesthesia GUI.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>1</integer>
-		</dict>
 		<key>Synesthesia.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+		<key>SynesthesiaApp.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
@@ -28,6 +28,16 @@
 			<true/>
 		</dict>
 		<key>493554591A27457000F435AA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4935546E1A27481A00F435AA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>493554861A27481A00F435AA</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -59,11 +59,13 @@ int main(int argc, const char * argv[]) {
 
     Texture *tt;
 
+#define CALCULATE 1
 #ifdef CALCULATE
     while(Tobago.enabled(0) && player.getFrameNum() != player.getTotalNumFrames()) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         histograms.iterate();
+        histograms.iterateCL();
 
         tt = player.getTexture();
         if(tt != NULL) { tt->bindToGLSL(0); }

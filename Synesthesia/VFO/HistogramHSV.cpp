@@ -8,10 +8,6 @@
 
 #include "HistogramHSV.h"
 
-#include <OpenCL/cl.h>
-#include <OpenCL/cl_gl_ext.h>
-#include <OpenGL/OpenGL.h>
-
 HistogramHSV::HistogramHSV(Player* p) {
     this->player = p;
     
@@ -21,20 +17,43 @@ HistogramHSV::HistogramHSV(Player* p) {
     numBins = binsH + binsS + binsV;
     
     framesize = player->getWidth()*player->getHeight();
-    /*
+    initCL();
+}
+
+bool HistogramHSV::initCL() {
     // Get current CGL Context and CGL Share group
     CGLContextObj kCGLContext = CGLGetCurrentContext();
+
+    if(kCGLContext == NULL) return false;
+
     CGLShareGroupObj kCGLShareGroup = CGLGetShareGroup(kCGLContext);
+    
     // Create CL context properties, add handle & share-group enum !
     cl_context_properties properties[] = {
         CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE,
         (cl_context_properties)kCGLShareGroup, 0
     };
-    // Create a context with device in the CGL share group
-    cl_context context = clCreateContext(properties, 0, 0, NULL, 0, 0);
     
-    std::cout << context << std::endl;*/
+    // Create a context with device in the CGL share group
+    context = clCreateContext(properties, 0, 0, NULL, 0, 0);
+
+    if(context == NULL) return false;
+
+    return true;
 }
+
+void HistogramHSV::iterateCL() {
+    Texture* t = player->getTexture();
+    
+    t->bindToGLSL(0);
+    cl_int err;
+    cl_mem cl_image = clCreateFromGLTexture(context, CL_MEM_READ_WRITE, t->target, 0, t->id, &err);
+
+    if(!cl_image || err != CL_SUCCESS) {
+        std::cout << "Failed to create OpenGL texture reference! " << err << std::endl;
+    }
+}
+
 
 void HistogramHSV::iterate() {
     unsigned char* image = player->getPixels();

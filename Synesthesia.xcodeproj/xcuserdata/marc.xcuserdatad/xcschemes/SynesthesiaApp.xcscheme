@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "493554411A27457000F435AA"
-               BuildableName = "Synesthesia GUI.app"
-               BlueprintName = "Synesthesia GUI"
+               BlueprintIdentifier = "4935546E1A27481A00F435AA"
+               BuildableName = "SynesthesiaApp.app"
+               BlueprintName = "SynesthesiaApp"
                ReferencedContainer = "container:Synesthesia.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,9 +28,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "493554591A27457000F435AA"
-               BuildableName = "Synesthesia GUITests.xctest"
-               BlueprintName = "Synesthesia GUITests"
+               BlueprintIdentifier = "493554861A27481A00F435AA"
+               BuildableName = "SynesthesiaAppTests.xctest"
+               BlueprintName = "SynesthesiaAppTests"
                ReferencedContainer = "container:Synesthesia.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -46,9 +46,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "493554591A27457000F435AA"
-               BuildableName = "Synesthesia GUITests.xctest"
-               BlueprintName = "Synesthesia GUITests"
+               BlueprintIdentifier = "493554861A27481A00F435AA"
+               BuildableName = "SynesthesiaAppTests.xctest"
+               BlueprintName = "SynesthesiaAppTests"
                ReferencedContainer = "container:Synesthesia.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -56,9 +56,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "493554411A27457000F435AA"
-            BuildableName = "Synesthesia GUI.app"
-            BlueprintName = "Synesthesia GUI"
+            BlueprintIdentifier = "4935546E1A27481A00F435AA"
+            BuildableName = "SynesthesiaApp.app"
+            BlueprintName = "SynesthesiaApp"
             ReferencedContainer = "container:Synesthesia.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -75,9 +75,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "493554411A27457000F435AA"
-            BuildableName = "Synesthesia GUI.app"
-            BlueprintName = "Synesthesia GUI"
+            BlueprintIdentifier = "4935546E1A27481A00F435AA"
+            BuildableName = "SynesthesiaApp.app"
+            BlueprintName = "SynesthesiaApp"
             ReferencedContainer = "container:Synesthesia.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -93,9 +93,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "493554411A27457000F435AA"
-            BuildableName = "Synesthesia GUI.app"
-            BlueprintName = "Synesthesia GUI"
+            BlueprintIdentifier = "4935546E1A27481A00F435AA"
+            BuildableName = "SynesthesiaApp.app"
+            BlueprintName = "SynesthesiaApp"
             ReferencedContainer = "container:Synesthesia.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
