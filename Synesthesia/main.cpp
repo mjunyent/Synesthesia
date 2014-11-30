@@ -26,7 +26,7 @@ int main(int argc, const char * argv[]) {
     std::cout << "Init" << std::endl;
     OSXPlayer player;
     player.enableTextureCache();
-    player.load("Europe.mp4");
+    player.load("Toying.MOV");
 
     std::cout << "Video lodaded" << std::endl;
     HistogramHSV histograms(&player);

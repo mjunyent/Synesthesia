@@ -17,6 +17,8 @@
 #include <OpenCL/cl.h>
 #include <OpenCL/cl_gl_ext.h>
 #include <OpenGL/OpenGL.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 class HistogramHSV {
 public:
@@ -43,10 +45,15 @@ public:
 
 private:
     bool initCL();
-    
+
     cl_context context;
-    
-    
+    cl_device_id device_id;
+    cl_command_queue command_queue;
+    cl_kernel kernel;
+    cl_kernel histogram_sum_partial_results_unorm8;
+    cl_program program;
+
+    int read_kernel_from_file(const char *filename, char **source, size_t *len);
 };
 
 #endif /* defined(__Synesthesia__HistogramHSV__) */

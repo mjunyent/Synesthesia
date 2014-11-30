@@ -69,6 +69,7 @@
 		49747E941A263B6D004B1241 /* Colors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Colors.h; sourceTree = "<group>"; };
 		49747E951A264CCD004B1241 /* ShotDetector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShotDetector.cpp; sourceTree = "<group>"; };
 		49747E961A264CCD004B1241 /* ShotDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShotDetector.h; sourceTree = "<group>"; };
+		49AC39151A28A1D60069CF93 /* gpu_histogram_buffer.cl */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.opencl; name = gpu_histogram_buffer.cl; path = build/gpu_histogram_buffer.cl; sourceTree = "<group>"; };
 		49B0159F19F91D2000112A25 /* FontHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontHandler.cpp; sourceTree = "<group>"; };
 		49B015A019F91D2000112A25 /* FontHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontHandler.h; sourceTree = "<group>"; };
 		49B015A419F91D2000112A25 /* ContextGLFW.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContextGLFW.cpp; sourceTree = "<group>"; };
@@ -130,6 +131,7 @@
 		49175CA419F4F943000FBC15 = {
 			isa = PBXGroup;
 			children = (
+				49AC39141A28A1C10069CF93 /* Kernels */,
 				49B015D519F93E3600112A25 /* libGLEW.a */,
 				49B015D619F93E3600112A25 /* libglfw3.a */,
 				49175CAF19F4F943000FBC15 /* Synesthesia */,
@@ -204,6 +206,14 @@
 				4958BAB019F6DF9900DE1837 /* AVFoundation.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		49AC39141A28A1C10069CF93 /* Kernels */ = {
+			isa = PBXGroup;
+			children = (
+				49AC39151A28A1D60069CF93 /* gpu_histogram_buffer.cl */,
+			);
+			name = Kernels;
 			sourceTree = "<group>";
 		};
 		49B0159B19F91D2000112A25 /* Tobago */ = {
