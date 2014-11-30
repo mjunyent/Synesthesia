@@ -104,7 +104,7 @@ bool HistogramHSV::initCL() {
 
     char* source[1];
     size_t src_len[1];
-    err = read_kernel_from_file("gpu_histogram_buffer.cl", &source[0], &src_len[0]);
+    err = read_kernel_from_file("gpu_histogram_image.cl", &source[0], &src_len[0]);
     if(err) {
         (*Tobago.log)(Log::ERROR) << "read_kernel_from_file() failed. File not found";
     }
@@ -116,18 +116,18 @@ bool HistogramHSV::initCL() {
     err = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
     if(err != CL_SUCCESS) {
         char    buffer[2048] = "";
-        (*Tobago.log)(Log::ERROR) << "clBuildProgram() failed.";
+        (*Tobago.log)(Log::ERROR) << "clBuildProgram() failed: " << err;
         clGetProgramBuildInfo(program, device_id, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, NULL);
         (*Tobago.log)(Log::INFO) << buffer;
     }
     
-    kernel = clCreateKernel(program, "histogram_rgba_unorm8", &err);
+    kernel = clCreateKernel(program, "histogram_image_rgba_unorm8", &err);
     if(!kernel || err)
-        (*Tobago.log)(Log::ERROR) << "clCreateKernel() failed creating kernel void histogram_rgba_unorm8(): " << err;
-    
-    histogram_sum_partial_results_unorm8 = clCreateKernel(program, "histogram_sum_partial_results_unorm8", &err);
-    if(!histogram_sum_partial_results_unorm8 || err)
-        (*Tobago.log)(Log::ERROR) << "clCreateKernel() failed creating kernel void histogram_sum_partial_results_unorm8(): " << err;
+        (*Tobago.log)(Log::ERROR) << "clCreateKernel() failed creating kernel void histogram_image_rgba_unorm8(): " << err;
+
+//    histogram_sum_partial_results_unorm8 = clCreateKernel(program, "histogram_sum_partial_results_unorm8", &err);
+//    if(!histogram_sum_partial_results_unorm8 || err)
+//        (*Tobago.log)(Log::ERROR) << "clCreateKernel() failed creating kernel void histogram_sum_partial_results_unorm8(): " << err;
 
     return true;
 }
@@ -143,7 +143,7 @@ void HistogramHSV::iterateCL() {
     if(!cl_image || err != CL_SUCCESS) (*Tobago.log)(Log::ERROR) << "Failed to create OpenGL texture reference! " << err;
 
     glFlush();
-    
+
     // Acquire shared objects
     err = clEnqueueAcquireGLObjects(command_queue, 1, &cl_image, 0, NULL, NULL);
     if(err) (*Tobago.log)(Log::ERROR) << "CL acquireGLobjects error: " << err;
@@ -152,54 +152,97 @@ void HistogramHSV::iterateCL() {
     size_t workgroup_size;
     size_t global_work_size[2];
     size_t local_work_size[2];
-    
-    clGetKernelWorkGroupInfo(kernel, device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &workgroup_size, NULL);
-    size_t num_groups = ((width * height) + workgroup_size - 1) / workgroup_size;
-    global_work_size[0] = num_groups * workgroup_size;
-    local_work_size[0] = workgroup_size;
+    size_t num_groups;
 
-    cl_mem partial_histogram_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, num_groups*257*3*sizeof(unsigned int), NULL, &err);
+    clGetKernelWorkGroupInfo(kernel, device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(size_t), &workgroup_size, NULL);
+    {
+        size_t  gsize[2];
+        
+        if (workgroup_size <= 256)
+        {
+            gsize[0] = 16;
+            gsize[1] = workgroup_size / 16;
+        }
+        else if (workgroup_size <= 1024)
+        {
+            gsize[0] = workgroup_size / 16;
+            gsize[1] = 16;
+        }
+        else
+        {
+            gsize[0] = workgroup_size / 32;
+            gsize[1] = 32;
+        }
+        
+        local_work_size[0] = gsize[0];
+        local_work_size[1] = gsize[1];
+        
+        global_work_size[0] = ((width + gsize[0] - 1) / gsize[0]);
+        global_work_size[1] = ((height + gsize[1] - 1) / gsize[1]);
+
+        num_groups = global_work_size[0] * global_work_size[1];
+        global_work_size[0] *= gsize[0];
+        global_work_size[1] *= gsize[1];
+    }
+    
+    cl_mem partial_histogram_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, num_groups*25*sizeof(unsigned int), NULL, &err);
     if (!partial_histogram_buffer || err) (*Tobago.log)(Log::ERROR) << "clCreateBuffer() failed: " << err;
     
-    //cl_mem histogram_buffer = clCreateBuffer(context, CL_MEM_WRITE_ONLY, 257*3*sizeof(unsigned int), NULL, &err);
-    //if (!histogram_buffer || err) (*Tobago.log)(Log::ERROR) << "clCreateBuffer() failed: " << err;
-    
-    err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &cl_image);
-    if(err != CL_SUCCESS) (*Tobago.log)(Log::ERROR) << "0: " << err;
-    
-    err = clSetKernelArg(kernel, 1, sizeof(int), &width);
-    if(err != CL_SUCCESS) (*Tobago.log)(Log::ERROR) << "1: " << err;
-    
-    err = clSetKernelArg(kernel, 2, sizeof(int), &height);
-    if(err != CL_SUCCESS) (*Tobago.log)(Log::ERROR) << "2: " << err;
-    
-    err = clSetKernelArg(kernel, 3, sizeof(cl_mem), &partial_histogram_buffer);
-    if(err != CL_SUCCESS) (*Tobago.log)(Log::ERROR) << "3: " << err;
+    clSetKernelArg(kernel, 0, sizeof(cl_mem), &cl_image);
+    clSetKernelArg(kernel, 1, sizeof(cl_mem), &partial_histogram_buffer);
 
-//    clSetKernelArg(histogram_sum_partial_results_unorm8, 0, sizeof(cl_mem), &partial_histogram_buffer);
-//    clSetKernelArg(histogram_sum_partial_results_unorm8, 1, sizeof(int), &num_groups);
-//    clSetKernelArg(histogram_sum_partial_results_unorm8, 2, sizeof(cl_mem), &histogram_buffer);
+    err = clEnqueueNDRangeKernel(command_queue, kernel, 2, NULL, global_work_size, local_work_size, 0, NULL, NULL);
+    if (err) (*Tobago.log)(Log::ERROR) << "clEnqueueNDRangeKernel() failed for histogram_image_rgba_unorm8 kernel: " << err;
 
-    err = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, global_work_size, local_work_size, 0, NULL, NULL);
-    if (err) (*Tobago.log)(Log::ERROR) << "clEnqueueNDRangeKernel() failed for histogram_rgba_unorm8 kernel: " << err;
-    
-    unsigned int* gpu_histogram_results = (unsigned int*) malloc(num_groups*257*3*sizeof(unsigned int));
 
-    err = clEnqueueReadBuffer(command_queue, partial_histogram_buffer, CL_TRUE, 0, num_groups*257*3*sizeof(unsigned int), gpu_histogram_results, 0, NULL, NULL);
+
+
+
+
+    unsigned int* gpu_histogram_results = (unsigned int*) malloc(num_groups*25*sizeof(unsigned int));
+
+    err = clEnqueueReadBuffer(command_queue, partial_histogram_buffer, CL_TRUE, 0, num_groups*25*sizeof(unsigned int), gpu_histogram_results, 0, NULL, NULL);
     if (err) (*Tobago.log)(Log::ERROR) << "clEnqueueReadBuffer() failed: " << err;
 
     
     
-
+    
+    
     // Release shared objects
     err = clEnqueueReleaseGLObjects(command_queue, 1, &cl_image, 0, NULL, NULL);
     if(err) (*Tobago.log)(Log::ERROR) << "CL releaseGLObjects error: " << err;
-    //checkError(err, "releasing GL objects");
 
     // Flush CL queue
     err = clFinish(command_queue);
     if(err) (*Tobago.log)(Log::ERROR) << "CL flush error: " << err;
 
+    std::vector<int> cosa(24, 0);
+
+    for(int l=0; l < num_groups; l++) {
+        for(int k=0; k<24; k++) {
+            cosa[k] += gpu_histogram_results[l*24 + k];
+        }
+    }
+    
+    free(gpu_histogram_results);
+    
+    clReleaseMemObject(partial_histogram_buffer);
+    clReleaseMemObject(cl_image);
+
+    /*
+    for(int l : cosa) {
+        std::cout << l << " ";
+    }
+    std::cout << std::endl;
+
+    for(int l : cosa) {
+        std::cout << ((double) l)/(1920*1080) << " ";
+    }
+    std::cout << std::endl;
+
+    int kl; std::cin >> kl;
+    */
+/*
     for(int i=0; i<num_groups*257*3; i++) {
         if(gpu_histogram_results[i] != 0)
         std::cout << gpu_histogram_results[i] << " ";
@@ -207,7 +250,7 @@ void HistogramHSV::iterateCL() {
     std::cout << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
-    std::cout << std::endl;
+    std::cout << std::endl;*/
 }
 
 
@@ -236,11 +279,11 @@ int HistogramHSV::read_kernel_from_file(const char *filename, char **source, siz
 void HistogramHSV::iterate() {
     unsigned char* image = player->getPixels();
 
-    std::vector<double> hist(numBins, 0.0);
+    std::vector<float> hist(numBins, 0.0);
     rgb mean = {0.0, 0.0, 0.0};
 
     for(int i=0; i<player->getNumChannels()*framesize; i+=player->getNumChannels()) {
-        hsv chsv = rgb2hsv((rgb){image[i]/255.0, image[i+1]/255.0, image[i+2]/255.0});
+        hsv chsv = rgb2hsv((rgb){image[i]/255.0f, image[i+1]/255.0f, image[i+2]/255.0f});
 
         if(!std::isnan(chsv.h)) hist[std::min(binsH-1, (int)(chsv.h/360.0*binsH))]++;
         hist[binsH+std::min(binsS-1, (int)(chsv.s*binsS))]++;
@@ -251,7 +294,7 @@ void HistogramHSV::iterate() {
         mean.b += image[i+1]/255.0;
     }
 
-    for(double& d : hist) d /= framesize;
+    for(float& d : hist) d /= framesize;
     
     mean.r /= framesize;
     mean.g /= framesize;
@@ -264,8 +307,8 @@ void HistogramHSV::iterate() {
 void HistogramHSV::save() {
     std::ofstream output("tempHist.txt");
 
-    for(std::vector<double>& h : histograms) {
-        for(double& v : h) output << v << " ";
+    for(std::vector<float>& h : histograms) {
+        for(float& v : h) output << v << " ";
         output << std::endl;
     }
 
@@ -290,7 +333,7 @@ void HistogramHSV::load() {
 
         std::stringstream in(line);
         
-        std::vector<double> tmpHist(numBins);
+        std::vector<float> tmpHist(numBins);
 
         for(int i=0; i<tmpHist.size(); i++) {
             in >> tmpHist[i];

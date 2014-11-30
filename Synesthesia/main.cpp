@@ -26,7 +26,7 @@ int main(int argc, const char * argv[]) {
     std::cout << "Init" << std::endl;
     OSXPlayer player;
     player.enableTextureCache();
-    player.load("Toying.MOV");
+    player.load("Toying.MOV" /*"Europe.mp4"*/);
 
     std::cout << "Video lodaded" << std::endl;
     HistogramHSV histograms(&player);
@@ -64,7 +64,11 @@ int main(int argc, const char * argv[]) {
     while(Tobago.enabled(0) && player.getFrameNum() != player.getTotalNumFrames()) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        histograms.iterate();
+//        histograms.iterate();
+//        histograms.save();
+//        std::cout << "asdf";
+//        int asdf; std::cin >> asdf;
+
         histograms.iterateCL();
 
         tt = player.getTexture();
@@ -75,7 +79,7 @@ int main(int argc, const char * argv[]) {
 
         s.use();
         s("tex", 0);
-        s("mean", new glm::vec3(histograms.rgbMeans.back().r, histograms.rgbMeans.back().g, histograms.rgbMeans.back().b));
+//        s("mean", new glm::vec3(histograms.rgbMeans.back().r, histograms.rgbMeans.back().g, histograms.rgbMeans.back().b));
         vao.draw();
 
         Tobago.swap(0);

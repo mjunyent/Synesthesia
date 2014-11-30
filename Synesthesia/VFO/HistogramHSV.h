@@ -29,7 +29,7 @@ public:
     void save();
     void load();
 
-    std::vector< std::vector<double> > histograms;
+    std::vector< std::vector<float> > histograms;
     std::vector<rgb> rgbMeans;
 
 

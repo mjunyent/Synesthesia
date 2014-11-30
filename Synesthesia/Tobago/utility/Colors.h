@@ -5,15 +5,15 @@
 #include <iostream>
 
 typedef struct {
-    double r;       // percent
-    double g;       // percent
-    double b;       // percent
+    float r;       // percent
+    float g;       // percent
+    float b;       // percent
 } rgb;
 
 typedef struct {
-    double h;       // angle in degrees
-    double s;       // percent
-    double v;       // percent
+    float h;       // angle in degrees
+    float s;       // percent
+    float v;       // percent
 } hsv;
 
 typedef struct {
