@@ -185,7 +185,7 @@ void HistogramHSV::iterateCL() {
         global_work_size[1] *= gsize[1];
     }
     
-    cl_mem partial_histogram_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, num_groups*25*sizeof(unsigned int), NULL, &err);
+    cl_mem partial_histogram_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE, num_groups*27*sizeof(unsigned int), NULL, &err);
     if (!partial_histogram_buffer || err) (*Tobago.log)(Log::ERROR) << "clCreateBuffer() failed: " << err;
     
     clSetKernelArg(kernel, 0, sizeof(cl_mem), &cl_image);
@@ -199,9 +199,9 @@ void HistogramHSV::iterateCL() {
 
 
 
-    unsigned int* gpu_histogram_results = (unsigned int*) malloc(num_groups*25*sizeof(unsigned int));
+    unsigned int* gpu_histogram_results = (unsigned int*) malloc(num_groups*27*sizeof(unsigned int));
 
-    err = clEnqueueReadBuffer(command_queue, partial_histogram_buffer, CL_TRUE, 0, num_groups*25*sizeof(unsigned int), gpu_histogram_results, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(command_queue, partial_histogram_buffer, CL_TRUE, 0, num_groups*27*sizeof(unsigned int), gpu_histogram_results, 0, NULL, NULL);
     if (err) (*Tobago.log)(Log::ERROR) << "clEnqueueReadBuffer() failed: " << err;
 
     
@@ -216,11 +216,11 @@ void HistogramHSV::iterateCL() {
     err = clFinish(command_queue);
     if(err) (*Tobago.log)(Log::ERROR) << "CL flush error: " << err;
 
-    std::vector<int> cosa(24, 0);
+    std::vector<int> cosa(27, 0);
 
     for(int l=0; l < num_groups; l++) {
-        for(int k=0; k<24; k++) {
-            cosa[k] += gpu_histogram_results[l*24 + k];
+        for(int k=0; k<27; k++) {
+            cosa[k] += gpu_histogram_results[l*27 + k];
         }
     }
     
@@ -228,29 +228,20 @@ void HistogramHSV::iterateCL() {
     
     clReleaseMemObject(partial_histogram_buffer);
     clReleaseMemObject(cl_image);
+/*
 
-    /*
     for(int l : cosa) {
         std::cout << l << " ";
     }
     std::cout << std::endl;
 
     for(int l : cosa) {
-        std::cout << ((double) l)/(1920*1080) << " ";
+        std::cout << ((double) l)/(width*height) << " ";
     }
     std::cout << std::endl;
+    std::cout << ((double) cosa[24])/(width*height*255.0f) << " " << ((double) cosa[25])/(width*height*255.0f) << " " << ((double) cosa[26])/(width*height*255.0f) << std::endl;
 
-    int kl; std::cin >> kl;
-    */
-/*
-    for(int i=0; i<num_groups*257*3; i++) {
-        if(gpu_histogram_results[i] != 0)
-        std::cout << gpu_histogram_results[i] << " ";
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;*/
+    int kl; std::cin >> kl;*/
 }
 
 
@@ -291,7 +282,7 @@ void HistogramHSV::iterate() {
         
         mean.r += image[i]/255.0;
         mean.g += image[i+1]/255.0;
-        mean.b += image[i+1]/255.0;
+        mean.b += image[i+2]/255.0;
     }
 
     for(float& d : hist) d /= framesize;
