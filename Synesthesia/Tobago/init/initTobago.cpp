@@ -2,6 +2,9 @@
 
 TobagoHandler::TobagoHandler(const char* logName) {
 	this->log = new Log(logName);
+    this->clcontext = NULL;
+    this->device_id = NULL;
+    this->command_queue = NULL;
 }
 
 void TobagoHandler::init(vector<Context*> contexts) {

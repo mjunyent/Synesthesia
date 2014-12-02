@@ -17,6 +17,11 @@
 #include <cmath>
 #include <vector>
 
+#ifndef NO_OCL
+#include <OpenCL/cl.h>
+#include <OpenCL/cl_gl_ext.h>
+#endif
+
 class Context {
 public:
 	bool enabled;
@@ -46,6 +51,9 @@ public:
 	Log *log;
 	vector<Context*> contexts;
 
+    cl_context clcontext;
+    cl_device_id device_id;
+    cl_command_queue command_queue;
 private:
 	void initContextsGlewFmod();
 };

@@ -34,6 +34,7 @@
 		49B015D719F93E3600112A25 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49B015D519F93E3600112A25 /* libGLEW.a */; };
 		49B015D819F93E3600112A25 /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49B015D619F93E3600112A25 /* libglfw3.a */; };
 		49B2E42D1A25D5E000C5ECAE /* HistogramHSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49B2E42B1A25D5E000C5ECAE /* HistogramHSV.cpp */; };
+		49B7B1A81A2DB236009BED9E /* OCLHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49B7B1A61A2DB236009BED9E /* OCLHelper.cpp */; };
 		49F029431A176C5100B355BA /* VideoAsset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49F029411A176C5100B355BA /* VideoAsset.cpp */; };
 		49FCEB811A25EF6500977A78 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49FCEB801A25EF6500977A78 /* OpenCL.framework */; };
 /* End PBXBuildFile section */
@@ -106,6 +107,8 @@
 		49B015D619F93E3600112A25 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = libs/libglfw3.a; sourceTree = "<group>"; };
 		49B2E42B1A25D5E000C5ECAE /* HistogramHSV.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HistogramHSV.cpp; sourceTree = "<group>"; };
 		49B2E42C1A25D5E000C5ECAE /* HistogramHSV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistogramHSV.h; sourceTree = "<group>"; };
+		49B7B1A61A2DB236009BED9E /* OCLHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLHelper.cpp; sourceTree = "<group>"; };
+		49B7B1A71A2DB236009BED9E /* OCLHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLHelper.h; sourceTree = "<group>"; };
 		49F029411A176C5100B355BA /* VideoAsset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VideoAsset.cpp; sourceTree = "<group>"; };
 		49F029421A176C5100B355BA /* VideoAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoAsset.h; sourceTree = "<group>"; };
 		49FCEB801A25EF6500977A78 /* OpenCL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenCL.framework; path = System/Library/Frameworks/OpenCL.framework; sourceTree = SDKROOT; };
@@ -248,6 +251,8 @@
 				49B015A519F91D2000112A25 /* ContextGLFW.h */,
 				49B015A619F91D2000112A25 /* initTobago.cpp */,
 				49B015A719F91D2000112A25 /* initTobago.h */,
+				49B7B1A61A2DB236009BED9E /* OCLHelper.cpp */,
+				49B7B1A71A2DB236009BED9E /* OCLHelper.h */,
 			);
 			path = init;
 			sourceTree = "<group>";
@@ -378,6 +383,7 @@
 				49B015D019F91D2000112A25 /* basic.cpp in Sources */,
 				49B015C719F91D2000112A25 /* initTobago.cpp in Sources */,
 				49B015C419F91D2000112A25 /* FontHandler.cpp in Sources */,
+				49B7B1A81A2DB236009BED9E /* OCLHelper.cpp in Sources */,
 				49B015CC19F91D2000112A25 /* lodepng.cpp in Sources */,
 				49479B631A13BEA100EE922E /* OFAVFoundationVideoPlayer.m in Sources */,
 				4935546A1A27460400F435AA /* AssetLibrary.cpp in Sources */,

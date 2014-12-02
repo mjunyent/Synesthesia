@@ -17,17 +17,17 @@ void histogram_sum_partial_results_unorm8(global uint *partial_histogram, int nu
     int     tid = (int)get_global_id(0);
     int     group_indx;
     int     n = num_groups;
-    local uint  tmp_histogram[256 * 3];
+    local uint  tmp_histogram[27];
 
     tmp_histogram[tid] = partial_histogram[tid];
     
-    group_indx = 256*3;
+    group_indx = 27;
     while (--n > 0)
     {
         tmp_histogram[tid] += partial_histogram[group_indx + tid];
-        group_indx += 256*3;
+        group_indx += 27;
     }
-    
+
     histogram[tid] = tmp_histogram[tid];
 }
 
@@ -62,7 +62,7 @@ void histogram_image_rgba_unorm8(image2d_t img, global uint *histogram)
         j -= local_size;
         indx += local_size;
     } while (j > 0);
- 
+
     barrier(CLK_LOCAL_MEM_FENCE);
     
     if ((x < image_width) && (y < image_height))
