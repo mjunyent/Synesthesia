@@ -75,7 +75,7 @@ int main(int argc, const char * argv[]) {
         if(tt != NULL) { tt->bindToGLSL(0); }
 
         player.syncNextFrame();
-        player.update();
+//        player.update();
 
         s.use();
         s("tex", 0);
@@ -115,7 +115,7 @@ int main(int argc, const char * argv[]) {
         if(tt != NULL) { tt->bindToGLSL(0); }
         
         player.syncNextFrame();
-        player.update();
+//        player.update();
         
         s.use();
         s("tex", 0);

@@ -420,7 +420,7 @@ static const NSString * ItemStatusContext;
         bNewFrame = NO;
         return;
     }
-
+    
     /**
      *  in most cases we check at what time the video player is up to,
      *  and use the time for sampling buffers in the code below.
@@ -443,7 +443,7 @@ static const NSString * ItemStatusContext;
     currentTime = time;
     
     if(bUpdateFirstFrame) {
-
+        
         // this forces the first frame to be updated.
         // here the values for time and currentTime are both zero.
         // so this is to get around the progress check below.
@@ -483,7 +483,7 @@ static const NSString * ItemStatusContext;
         bNewFrame = NO;
         return;
     }
-
+    
     //---------------------------------------------------------- audio buffer.
     while(bSampleAudio == true &&                                   // audio sampling is on.
           self.assetReaderAudioTrackOutput != nil &&                // asset has a audio track.
@@ -517,7 +517,7 @@ static const NSString * ItemStatusContext;
           self.assetReaderVideoTrackOutput != nil &&                    // asset has a video track.
           self.assetReader.status == AVAssetReaderStatusReading &&      // asset read is in reading state.
           ((CMTimeCompare(videoSampleTime, currentTime) == -1) ||        // timestamp is less then currentTime.
-          (CMTimeCompare(videoSampleTime, currentTime) == 0)))           // timestamp is equal currentTime.
+           (CMTimeCompare(videoSampleTime, currentTime) == 0)))           // timestamp is equal currentTime.
     {
         CMSampleBufferRef videoBufferTemp;
         @try {
@@ -552,6 +552,86 @@ static const NSString * ItemStatusContext;
         }
     }
 }
+
+
+
+//---------------------------------------------------------- updateToNextFrame.
+- (void)updateToNextFrame {
+    /**
+     *  return if,
+     *  video is not yet loaded,
+     *  video is finished playing.
+     */
+    if(![self isReady] || [self isFinished]) {
+        bNewFrame = NO;
+        return;
+    }
+
+    if(self.assetReader == nil) {
+        if(bSeeking == true) {
+            
+            // video player is seeking to new position.
+            // asset reader can only be created when seeking has finished.
+            
+            bNewFrame = NO;
+            return;
+        }
+        
+        [self createAssetReaderWithTimeRange:CMTimeRangeMake(currentTime, duration)];
+    }
+    
+    if(self.assetReader.status != AVAssetReaderStatusReading) {
+        bNewFrame = NO;
+        return;
+    }
+    
+    BOOL bCopiedNewSamples = NO;
+    if(bSampleVideo == true &&
+       self.assetReaderVideoTrackOutput != nil &&
+       self.assetReader.status == AVAssetReaderStatusReading) {
+        CMSampleBufferRef videoBufferTemp;
+        @try {
+            videoBufferTemp = [self.assetReaderVideoTrackOutput copyNextSampleBuffer];
+        } @catch (NSException * e) {
+            //Nothing needed.
+        }
+        
+        if(videoBufferTemp) {
+            if(videoSampleBuffer) {
+                CFRelease(videoSampleBuffer);
+                videoSampleBuffer = nil;
+            }
+            videoSampleBuffer = videoBufferTemp;
+            
+            videoSampleTime = CMSampleBufferGetPresentationTimeStamp(videoSampleBuffer);
+            currentTime = videoSampleTime;
+            
+            bCopiedNewSamples = YES;
+        }
+    }
+    
+    if(bCopiedNewSamples == true) {
+        bNewFrame = CMTimeCompare(videoSampleTime, videoSampleTimePrev) == 1;
+        if(bNewFrame) {
+            videoSampleTimePrev = videoSampleTime;
+        }
+     
+        if([self.delegate respondsToSelector:@selector(playerDidProgress)]) {
+            [self.delegate playerDidProgress];
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 - (void)addTimeObserverToPlayer {
     if(bWillBeUpdatedExternally) {

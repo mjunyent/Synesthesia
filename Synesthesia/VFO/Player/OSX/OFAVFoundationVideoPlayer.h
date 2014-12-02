@@ -88,6 +88,7 @@
 - (void)setVideoSize:(CGSize)size;
 
 - (void)update;
+- (void)updateToNextFrame;
 
 - (void)play;
 - (void)pause;

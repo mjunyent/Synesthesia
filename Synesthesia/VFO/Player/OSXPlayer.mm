@@ -391,11 +391,23 @@ void OSXPlayer::previousFrame() {
 
 
 void OSXPlayer::syncNextFrame() {
-    double sampleTime = [((OFAVFoundationVideoPlayer *)videoPlayer) getCurrentTimeInSec];
+    if(!isLoaded()) return;
+    
+    newFrame = false;
+    [((OFAVFoundationVideoPlayer *)videoPlayer) updateToNextFrame];
+    newFrame = [(OFAVFoundationVideoPlayer *)videoPlayer isNewFrame];
+    
+    if(newFrame) {
+        updatePixels = true;
+        updateTexture = true;
+    }
+
+    
+/*    double sampleTime = [((OFAVFoundationVideoPlayer *)videoPlayer) getCurrentTimeInSec];
 //    double sampleTime2 = [((OFAVFoundationVideoPlayer *)videoPlayer) getVideoSampleTimeInSec];
     
     double fps = [((OFAVFoundationVideoPlayer *)videoPlayer) getFrameRate];
-    [((OFAVFoundationVideoPlayer *)videoPlayer) setSynchSampleTimeInSec:sampleTime+1.0/fps];
+    [((OFAVFoundationVideoPlayer *)videoPlayer) setSynchSampleTimeInSec:sampleTime+1.0/fps];*/
 }
 
 
