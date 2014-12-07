@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		49175CB119F4F943000FBC15 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49175CB019F4F943000FBC15 /* main.cpp */; };
 		4935546A1A27460400F435AA /* AssetLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 493554681A27460400F435AA /* AssetLibrary.cpp */; };
+		494138451A346C8900167B5B /* libboost_filesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 494138441A346C8900167B5B /* libboost_filesystem.a */; };
+		494138471A346CD000167B5B /* libboost_system.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 494138461A346CD000167B5B /* libboost_system.a */; };
 		49479B631A13BEA100EE922E /* OFAVFoundationVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 49479B5E1A13BEA100EE922E /* OFAVFoundationVideoPlayer.m */; };
 		49479B641A13BEA100EE922E /* OFAVFoundationVideoPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 49479B601A13BEA100EE922E /* OFAVFoundationVideoPlayerView.m */; };
 		49479B6B1A13C09A00EE922E /* OSXPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49479B691A13C09A00EE922E /* OSXPlayer.mm */; };
@@ -42,12 +44,12 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		49175CAB19F4F943000FBC15 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 16;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -56,6 +58,8 @@
 		49175CB019F4F943000FBC15 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		493554681A27460400F435AA /* AssetLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AssetLibrary.cpp; sourceTree = "<group>"; };
 		493554691A27460400F435AA /* AssetLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssetLibrary.h; sourceTree = "<group>"; };
+		494138441A346C8900167B5B /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = libs/libboost_filesystem.a; sourceTree = "<group>"; };
+		494138461A346CD000167B5B /* libboost_system.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_system.a; path = libs/libboost_system.a; sourceTree = "<group>"; };
 		49479B5D1A13BEA100EE922E /* OFAVFoundationVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OFAVFoundationVideoPlayer.h; sourceTree = "<group>"; };
 		49479B5E1A13BEA100EE922E /* OFAVFoundationVideoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OFAVFoundationVideoPlayer.m; sourceTree = "<group>"; };
 		49479B5F1A13BEA100EE922E /* OFAVFoundationVideoPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OFAVFoundationVideoPlayerView.h; sourceTree = "<group>"; };
@@ -126,6 +130,8 @@
 				4958BAB319F6DF9E00DE1837 /* AVKit.framework in Frameworks */,
 				4958BAB119F6DF9900DE1837 /* AVFoundation.framework in Frameworks */,
 				49B015D819F93E3600112A25 /* libglfw3.a in Frameworks */,
+				494138451A346C8900167B5B /* libboost_filesystem.a in Frameworks */,
+				494138471A346CD000167B5B /* libboost_system.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,8 +142,6 @@
 			isa = PBXGroup;
 			children = (
 				49AC39141A28A1C10069CF93 /* Kernels */,
-				49B015D519F93E3600112A25 /* libGLEW.a */,
-				49B015D619F93E3600112A25 /* libglfw3.a */,
 				49175CAF19F4F943000FBC15 /* Synesthesia */,
 				4958BAB819F6DFEB00DE1837 /* Frameworks */,
 				49175CAE19F4F943000FBC15 /* Products */,
@@ -203,6 +207,10 @@
 		4958BAB819F6DFEB00DE1837 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				494138461A346CD000167B5B /* libboost_system.a */,
+				494138441A346C8900167B5B /* libboost_filesystem.a */,
+				49B015D519F93E3600112A25 /* libGLEW.a */,
+				49B015D619F93E3600112A25 /* libglfw3.a */,
 				49FCEB801A25EF6500977A78 /* OpenCL.framework */,
 				4958BAB619F6DFB400DE1837 /* Foundation.framework */,
 				4958BAB419F6DFAE00DE1837 /* CoreFoundation.framework */,

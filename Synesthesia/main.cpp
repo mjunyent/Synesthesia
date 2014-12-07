@@ -10,11 +10,13 @@
 #include "VFO/HistogramHSV.h"
 #include "VFO/ShotDetector.h"
 #include "VFO/VideoAsset.h"
-
+#include "VFO/AssetLibrary.h"
 
 #include <unistd.h>
 
 int main(int argc, const char * argv[]) {
+    AssetLibrary a("/Users/marc/Desktop/");
+
     TobagoInitGLFW(3, 3);
     
     ContextGLFW context = ContextGLFW(1280, 720, "Synesthesia", NULL, NULL);
@@ -64,7 +66,7 @@ int main(int argc, const char * argv[]) {
 
 #define CALCULATE 1
 #ifdef CALCULATE
-    while(Tobago.enabled(0) && player.getFrameNum() != player.getTotalNumFrames()) {
+    while(Tobago.enabled(0) && !player.isMovieDone()) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         histograms.iterate();

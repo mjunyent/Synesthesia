@@ -11,21 +11,45 @@
 
 #include <string>
 #include <VideoAsset.h>
+#include <boost/filesystem.hpp>
+
+namespace bfs = boost::filesystem;
+
+/* Folder structure
+ * /                        <- path
+ * |
+ * |videos/                 <- video asset information stored here
+ *        |video1/
+ *        |video2/
+ *        |video3/
+ *        |....
+ *        |videoN/
+ *               |videoFile.mp4  <- optional.
+ *               |videoInfo.txt  <- info such as name, path, date,
+ *               |timeTable      <- table with frame to second relation
+ *               |shotBoundaries <- list of shot boundaries
+ *               |histograms     <- list of frame histograms
+ *               |means          <- list of means
+ *
+ */
 
 class AssetLibrary {
 public:
     AssetLibrary(std::string path);
+
+//    void loadAssets();
+//    void loadAsset(std::string name);
+
+//    bool exists(std::string name);
+
+//    void addAsset(VideoAsset* va);
+//    void removeAsset(VideoAsset* va);
     
-    void loadAssets();
-    void loadAsset(std::string name);
 
-    bool exists(std::string name);
-
-    void addAsset(VideoAsset* va);
-    void removeAsset(VideoAsset* va);
+//    std::vector<VideoAsset*> va;
     
-
-    std::vector<VideoAsset*> va;
+private:
+    bfs::path path;
 };
 
 #endif /* defined(__Synesthesia__AssetLibrary__) */

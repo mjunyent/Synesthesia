@@ -593,6 +593,9 @@ static const NSString * ItemStatusContext;
         @try {
             videoBufferTemp = [self.assetReaderVideoTrackOutput copyNextSampleBuffer];
         } @catch (NSException * e) {
+            NSLog(@"UAUAU");
+            NSLog(@"%@", [e reason]);
+            NSLog(@"%@", [e userInfo]);
             //Nothing needed.
         }
         
@@ -607,6 +610,8 @@ static const NSString * ItemStatusContext;
             currentTime = videoSampleTime;
             
             bCopiedNewSamples = YES;
+        } else {
+            bFinished = YES;
         }
     }
     
