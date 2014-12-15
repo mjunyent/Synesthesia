@@ -12,11 +12,11 @@
 #include "VFO/VideoAsset.h"
 #include "VFO/AssetLibrary.h"
 
+#include "VFO/Player/NOSXPlayer.h"
+
 #include <unistd.h>
 
 int main(int argc, const char * argv[]) {
-    AssetLibrary a("/Users/marc/Desktop/");
-
     TobagoInitGLFW(3, 3);
     
     ContextGLFW context = ContextGLFW(1280, 720, "Synesthesia", NULL, NULL);
@@ -24,6 +24,30 @@ int main(int argc, const char * argv[]) {
     Tobago.use(0);
 
     TOBAGO::initOCLwithCurrentOGLcontext();
+    
+    
+    
+    
+    
+    NOSXPlayer suppaPlayer;
+    suppaPlayer.loadWithURL("/Users/marc/Documents/Developing/Synesthesia/build/Europe.mp4");
+
+    
+    
+    
+    VideoAsset("/Users/marc/Desktop/video/finalcountdown");
+
+    VideoAsset fasset("/Users/marc/Documents/Developing/Synesthesia/build/Europe.mp4",
+                      "/Users/marc/Desktop/video/finalcountdown",
+                      true,
+                      false);
+
+    fasset.process();
+    
+    AssetLibrary a("/Users/marc/Desktop/");
+    a.loadAssets();
+
+
 
     VideoAsset asset("/Users/marc/Documents/Developing/Synesthesia/build/Europe.mp4");
 

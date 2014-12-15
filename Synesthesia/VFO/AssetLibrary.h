@@ -18,7 +18,7 @@ namespace bfs = boost::filesystem;
 /* Folder structure
  * /                        <- path
  * |
- * |videos/                 <- video asset information stored here
+ * |video/                 <- video asset information stored here
  *        |video1/
  *        |video2/
  *        |video3/
@@ -37,7 +37,7 @@ class AssetLibrary {
 public:
     AssetLibrary(std::string path);
 
-//    void loadAssets();
+    void loadAssets();
 //    void loadAsset(std::string name);
 
 //    bool exists(std::string name);
@@ -50,6 +50,10 @@ public:
     
 private:
     bfs::path path;
+    bfs::path video_path;
+    
+    void scanVideoFolder();
+    std::vector<bfs::path> vvideo_paths;
 };
 
 #endif /* defined(__Synesthesia__AssetLibrary__) */
