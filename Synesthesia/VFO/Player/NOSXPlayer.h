@@ -10,7 +10,8 @@
 #define Synesthesia_NOSXPlayer_h
 
 #include <string>
-
+#include <CoreMedia/CMTime.h>
+#include <CoreMedia/CMTimeRange.h>
 
 class NOSXPlayer {
 public:
@@ -18,8 +19,13 @@ public:
 
     bool loadWithURL(std::string url);
     
-    bool createAssetReaderWithTimeRange(void* timeRange);
+    bool createAssetReaderWithTimeRange(CMTimeRange timeRange);
 
+    
+    bool isLoaded;
+    bool isReady;
+    bool isFinished;
+    
 private:
     void* player;
     void* playerItem;
@@ -27,7 +33,9 @@ private:
     void* assetReader;
     void* assetReaderVideoTrackOutput;
     
-    void* duration;
+    CMTime duration;
+    CMTime videoSampleTime;
+    CMTime videoSampleTimePrev;
 };
 
 #endif

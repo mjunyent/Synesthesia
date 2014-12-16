@@ -13,6 +13,13 @@
 
 NOSXPlayer::NOSXPlayer() {
     this->player = [[[AVPlayer alloc] init] autorelease];
+
+    duration = kCMTimeZero;
+    videoSampleTime = kCMTimeZero;
+    videoSampleTimePrev = kCMTimeZero;
+    
+    isLoaded = false;
+    isFinished = false;
 }
 
 bool NOSXPlayer::loadWithURL(std::string url) {
@@ -26,15 +33,18 @@ bool NOSXPlayer::loadWithURL(std::string url) {
     
     if(!this->asset) return false;
     
-    duration = new CMTime;
-    CMTime tduration = [((AVURLAsset *) asset) duration];
-    ((CMTime*)duration)->epoch = tduration.epoch;
-    ((CMTime*)duration)->flags = tduration.flags;
-    ((CMTime*)duration)->timescale = tduration.timescale;
-    ((CMTime*)duration)->value = tduration.value;
+    duration = [((AVURLAsset *) asset) duration];
+
+    NSLog(@"seconds = %f", CMTimeGetSeconds(duration));
+
+    if(CMTimeCompare(duration, kCMTimeZero) == 0) {
+        //TODO ERROR
+    }
     
-    //TODO perform time checks (nonzero not infinite).
-    
+//    if(!isfinite(getDurationInSec())) {
+        //TODO ERROR
+//    }
+
     //TODO call createassetreaderwithtimerange.
     
     //.......
@@ -44,16 +54,35 @@ bool NOSXPlayer::loadWithURL(std::string url) {
     return true;
 }
 
-bool NOSXPlayer::createAssetReaderWithTimeRange(void *VtimeRange) {
-    CMTimeRange *timeRange = (CMTimeRange*)VtimeRange;
+bool NOSXPlayer::createAssetReaderWithTimeRange(CMTimeRange timeRange) {
 
     
     NSError *error = nil;
     assetReader = [AVAssetReader assetReaderWithAsset:(AVAsset*)asset error:&error];
 
-    if(
+    if(error) {
+//        NSLog(@"assetReader: error during initialisation: %@", [error localizedDescription]);
+        //TODO ERROR
+    }
+    
+    ((AVAssetReader*)assetReader).timeRange = timeRange;
     
     
+    NSMutableDictionary * videoOutputSettings = [[[NSMutableDictionary alloc] init] autorelease];
+    [videoOutputSettings setObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(NSString*)kCVPixelBufferPixelFormatTypeKey];
+    NSArray * videoTracks = [((AVAsset*)asset) tracksWithMediaType:AVMediaTypeVideo];
+    if([videoTracks count] > 0) {
+        
+    } else {
+        //TODO ERROR
+    }
+    
+    
+    BOOL bOk = [((AVAssetReader*)assetReader) startReading];
+    if(!bOk) {
+        //TODO ERROR
+    }
+
     return true;
 }
 
