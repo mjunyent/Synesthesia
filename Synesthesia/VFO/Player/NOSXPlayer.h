@@ -12,25 +12,43 @@
 #include <string>
 #include <CoreMedia/CMTime.h>
 #include <CoreMedia/CMTimeRange.h>
+#include "Tobago.h"
+#include <string>
+
+class NOSXPlayerException : public exception {
+public:
+    NOSXPlayerException(std::string s) : s(s) { };
+    std::string s;
+    virtual const char* what() const throw() {
+        return s.c_str();
+    };
+};
 
 class NOSXPlayer {
 public:
     NOSXPlayer();
 
-    bool loadWithURL(std::string url);
-    
+    bool load(std::string url);
+    void dealloc();
+    void unload();
+
     bool createAssetReaderWithTimeRange(CMTimeRange timeRange);
 
     void updateToNextFrame();
-    
-    
-    void dealloc();
-    void unload();
+
+
+    double getPosition();
 
     bool isReady;
     bool isFinished;
     bool isNewFrame;
-    
+
+    long currentFrame;
+
+    size_t width;
+    size_t height;
+    float framerate;
+
 private:
     void* asset;
     void* assetReader;
@@ -41,8 +59,6 @@ private:
     CMTime videoSampleTime;
     CMTime videoSampleTimePrev;//maybe can be local variable in updatetonextframe.
     
-    int width;
-    int height;
     
 };
 

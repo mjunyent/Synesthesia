@@ -55,35 +55,39 @@ VideoAsset::VideoAsset(bfs::path videoFile, bfs::path path, bool copy, bool proc
 //TODO: function to rewing syncronously the videos.
 //TODO: correct frame number getter!
 void VideoAsset::process() {
-    HistogramHSV histograms(player);
+//    HistogramHSV histograms(player);
     
-    while(!player->isMovieDone()) {
-        histograms.iterate();
-        frame2Timestamp.push_back(std::make_pair(player->getFrameNum(),player->getPosition()));
-        player->syncNextFrame();
+    while(!player->isFinished) {
+//        histograms.iterate();
+        frame2Timestamp.push_back(std::make_pair(player->currentFrame,player->getPosition()));
+        player->updateToNextFrame();
         
-        std::cout << player->getFrameNum() << " " << player->getPosition() << std::endl;
+        std::cout << player->currentFrame << " " << player->getPosition() << std::endl;
     }
     
-    this->histograms = histograms.histograms;
+//    this->histograms = histograms.histograms;
 
-    histograms.save();
-    writeHistograms();
-    readHistograms();
-    histograms.histograms = this->histograms;
-    int ab; std::cin >> ab;
-    histograms.save();
-    
+//    histograms.save();
+//    writeHistograms();
+//    readHistograms();
+//    histograms.histograms = this->histograms;
+//    int ab; std::cin >> ab;
+//    histograms.save();
 }
 
 void VideoAsset::loadPlayerSync() {
     #ifdef __APPLE__
-        player = new OSXPlayer();
+        player = new NOSXPlayer();
     #endif
     
-    player->load(video_path.string());
+    try {
+        player->load(video_path.string());
+    } catch (NOSXPlayerException& e) {
+        (*Tobago.log)(Log::ERROR) << "Error loading video " << path.string() << " : " << e.what();
+        throw VideoAssetException("Could not load video file!");
+    }
 
-    if(player->isError() || !player->isLoaded())
+    if(!player->isReady)
         throw VideoAssetException("Could not load video file!");
 }
 

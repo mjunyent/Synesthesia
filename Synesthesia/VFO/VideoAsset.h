@@ -13,12 +13,11 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <ctime>
-#include "Player.h"
 #include <vector>
 #include <utility>
 
 #ifdef __APPLE__
-#include "OSXPlayer.h"
+#include "NOSXPlayer.h"
 #endif
 
 namespace bfs = boost::filesystem;
@@ -38,8 +37,7 @@ namespace bfs = boost::filesystem;
  * 3 date
  */
 
-class VideoAssetException: public exception
-{
+class VideoAssetException: public exception {
 public:
     VideoAssetException(std::string s);
     std::string s;
@@ -65,7 +63,7 @@ public:
     bfs::path path;
     bfs::path video_path;
 
-    Player* player;
+    NOSXPlayer* player;
 
     //class to read info from files and those things.
     //vector<whatever> shotboundaries;

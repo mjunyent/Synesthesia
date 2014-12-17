@@ -9,14 +9,14 @@
 #ifndef __Synesthesia__HistogramHSV__
 #define __Synesthesia__HistogramHSV__
 
-#include "Player.h"
+#include "NOSXPlayer.h"
 #include <vector>
 #include <fstream>
 #include <sstream>
 
 class HistogramHSV {
 public:
-    HistogramHSV(Player* p);
+    HistogramHSV(NOSXPlayer* p);
 
     void iterate();
     void iterateGPU();
@@ -30,7 +30,7 @@ public:
 
 
 
-    Player* player;
+    NOSXPlayer* player;
     
     int binsH, binsS, binsV;
     int numBins;

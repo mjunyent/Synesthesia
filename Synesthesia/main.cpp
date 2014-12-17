@@ -24,17 +24,30 @@ int main(int argc, const char * argv[]) {
     Tobago.use(0);
 
     TOBAGO::initOCLwithCurrentOGLcontext();
-    
-    
-    
-    
-    
-    NOSXPlayer suppaPlayer;
-    suppaPlayer.loadWithURL("/Users/marc/Documents/Developing/Synesthesia/build/Europe.mp4");
 
+
+    std::cout << "END" << std::endl;
+
+    try {
+    VideoAsset flasset("/Users/marc/Documents/Developing/Synesthesia/build/Europe.mp4",
+                      "/Users/marc/Desktop/video/finalcountdown",
+                      true,
+                      false);
+        flasset.process();
+    } catch (exception& e) {
+        std::cout << e.what();
+    }
+
+
+    NOSXPlayer suppaPlayer;
+    suppaPlayer.load("/Users/marc/Documents/Developing/Synesthesia/build/Europe.mp4");
+
+
+
+    OSXPlayer ol;
+    ol.load("/Users/marc/Documents/Developing/Synesthesia/build/Europe.mp4");
     
-    
-    
+
     VideoAsset("/Users/marc/Desktop/video/finalcountdown");
 
     VideoAsset fasset("/Users/marc/Documents/Developing/Synesthesia/build/Europe.mp4",
