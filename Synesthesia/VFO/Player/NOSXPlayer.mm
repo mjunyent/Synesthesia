@@ -12,18 +12,40 @@
 #import <AVFoundation/AVFoundation.h>
 
 NOSXPlayer::NOSXPlayer() {
-    this->player = [[[AVPlayer alloc] init] autorelease];
+    videoSampleBuffer = nil;
 
     duration = kCMTimeZero;
     videoSampleTime = kCMTimeZero;
     videoSampleTimePrev = kCMTimeZero;
     
-    isLoaded = false;
+    isReady = false;
     isFinished = false;
+    isNewFrame = false;
+
+    width = 0;
+    height = 0;
+
+    assetReader = nil;
+    assetReaderVideoTrackOutput = nil;
+    asset = nil;
 }
 
+void NOSXPlayer::dealloc() {
+    [(AVAssetReader*)assetReader cancelReading];
+    assetReader = nil;
+
+    assetReaderVideoTrackOutput = nil;
+    asset = nil;
+
+    if(videoSampleBuffer) {
+        CFRelease((CMSampleBufferRef*)videoSampleBuffer);
+        videoSampleBuffer = nil;
+    }
+}
+
+
 bool NOSXPlayer::loadWithURL(std::string url) {
-    //TODO unload video.
+    unload();
     
     NSString * nsURL = [NSString stringWithCString:url.c_str() encoding:[NSString defaultCStringEncoding]];
     
@@ -35,16 +57,15 @@ bool NOSXPlayer::loadWithURL(std::string url) {
     
     duration = [((AVURLAsset *) asset) duration];
 
-    NSLog(@"seconds = %f", CMTimeGetSeconds(duration));
-
     if(CMTimeCompare(duration, kCMTimeZero) == 0) {
         //TODO ERROR
     }
     
-//    if(!isfinite(getDurationInSec())) {
+    if(!isfinite(CMTimeGetSeconds(duration))) {
         //TODO ERROR
-//    }
+    }
 
+    bool 
     //TODO call createassetreaderwithtimerange.
     
     //.......
@@ -55,8 +76,8 @@ bool NOSXPlayer::loadWithURL(std::string url) {
 }
 
 bool NOSXPlayer::createAssetReaderWithTimeRange(CMTimeRange timeRange) {
+    videoSampleTime = videoSampleTimePrev = timeRange.start;
 
-    
     NSError *error = nil;
     assetReader = [AVAssetReader assetReaderWithAsset:(AVAsset*)asset error:&error];
 
@@ -72,7 +93,18 @@ bool NOSXPlayer::createAssetReaderWithTimeRange(CMTimeRange timeRange) {
     [videoOutputSettings setObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(NSString*)kCVPixelBufferPixelFormatTypeKey];
     NSArray * videoTracks = [((AVAsset*)asset) tracksWithMediaType:AVMediaTypeVideo];
     if([videoTracks count] > 0) {
+        AVAssetTrack * videoTrack = [videoTracks objectAtIndex:0];
+        assetReaderVideoTrackOutput = [AVAssetReaderTrackOutput assetReaderTrackOutputWithTrack:videoTrack outputSettings:videoOutputSettings];
+
+        if(assetReaderVideoTrackOutput == nil) {
+            //TODO ERROR
+        }
         
+        if([((AVAssetReader*)assetReader) canAddOutput:((AVAssetReaderTrackOutput*)assetReaderVideoTrackOutput)]) {
+            [((AVAssetReader*)assetReader) addOutput:((AVAssetReaderTrackOutput*)assetReaderVideoTrackOutput)];
+        } else {
+            //TODO ERROR
+        }        
     } else {
         //TODO ERROR
     }
@@ -110,10 +142,25 @@ void NOSXPlayer::updateToNextFrame() {
         }
         
         if(videoBufferTemp) {
+            if(videoSampleBuffer) {
+                CFRelease(((CMSampleBufferRef*)videoSampleBuffer));
+                videoSampleBuffer = nil;
+            }
+            videoSampleBuffer = videoBufferTemp;
             
+            videoSampleTime = CMSampleBufferGetPresentationTimeStamp(*((CMSampleBufferRef*)videoSampleBuffer));
+            
+            copiedNewSamples = true;
         } else {
-            
+            isFinished = true;
         }
+    }
+    
+    if(copiedNewSamples) {
+        isNewFrame = CMTimeCompare(videoSampleTime, videoSampleTimePrev) == 1;
+
+        if(isNewFrame)
+            videoSampleTimePrev = videoSampleTime;
     }
 }
 

@@ -23,20 +23,27 @@ public:
 
     void updateToNextFrame();
     
-    bool isLoaded;
+    
+    void dealloc();
+    void unload();
+
     bool isReady;
     bool isFinished;
+    bool isNewFrame;
     
 private:
-    void* player;
-    void* playerItem;
     void* asset;
     void* assetReader;
     void* assetReaderVideoTrackOutput;
+    void* videoSampleBuffer;
     
     CMTime duration;
     CMTime videoSampleTime;
-    CMTime videoSampleTimePrev;
+    CMTime videoSampleTimePrev;//maybe can be local variable in updatetonextframe.
+    
+    int width;
+    int height;
+    
 };
 
 #endif
