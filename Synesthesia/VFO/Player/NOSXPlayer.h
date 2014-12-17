@@ -21,6 +21,7 @@ public:
     
     bool createAssetReaderWithTimeRange(CMTimeRange timeRange);
 
+    void updateToNextFrame();
     
     bool isLoaded;
     bool isReady;

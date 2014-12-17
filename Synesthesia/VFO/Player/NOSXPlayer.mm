@@ -88,7 +88,34 @@ bool NOSXPlayer::createAssetReaderWithTimeRange(CMTimeRange timeRange) {
 
 
 
-
+void NOSXPlayer::updateToNextFrame() {
+    //Check that its ready and not finished, else ERROR. TODO.
+    
+    if(assetReader == nil) {
+        //TODO createAssetReader with time range or ERROR
+    }
+    
+    if (((AVAssetReader*)assetReader).status != AVAssetReaderStatusReading) {
+        //ERROR TODO
+    }
+    
+    bool copiedNewSamples = false;
+    if(assetReaderVideoTrackOutput != nil &&
+       ((AVAssetReader*)assetReader).status == AVAssetReaderStatusReading) {
+        CMSampleBufferRef videoBufferTemp;
+        @try {
+            videoBufferTemp = [((AVAssetReaderTrackOutput*)assetReaderVideoTrackOutput) copyNextSampleBuffer];
+        } @catch (NSException *e) {
+            //TODO somethig.
+        }
+        
+        if(videoBufferTemp) {
+            
+        } else {
+            
+        }
+    }
+}
 
 
 
