@@ -23,7 +23,7 @@ int main(int argc, const char * argv[]) {
     Tobago.init(&context);
     Tobago.use(0);
 
-    TOBAGO::initOCLwithCurrentOGLcontext();
+//    TOBAGO::initOCLwithCurrentOGLcontext();
 
 
     std::cout << "END" << std::endl;
@@ -61,7 +61,7 @@ int main(int argc, const char * argv[]) {
     a.loadAssets();
 
 
-
+/*
     VideoAsset asset("/Users/marc/Documents/Developing/Synesthesia/build/Europe.mp4");
 
     std::cout << "Init" << std::endl;
@@ -168,7 +168,7 @@ int main(int argc, const char * argv[]) {
     
     histograms.save();
 #endif
-
+*/
     Tobago.log->flush();
     glfwTerminate();
     exit(EXIT_SUCCESS);

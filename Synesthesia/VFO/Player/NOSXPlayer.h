@@ -39,6 +39,11 @@ public:
 
     double getPosition();
 
+    unsigned char* getPixels();
+    Texture* getTexture();
+
+    bool enableTextureCache();
+
     bool isReady;
     bool isFinished;
     bool isNewFrame;
@@ -59,7 +64,16 @@ private:
     CMTime videoSampleTime;
     CMTime videoSampleTimePrev;//maybe can be local variable in updatetonextframe.
     
+    bool textureCacheEnabled;
+    bool textureCacheSupported;
     
+    GLubyte* pixels;
+    Texture* texture;
+    
+    bool updatePixels;
+    bool updateTexture;
+    
+    void initTextureCache();
 };
 
 #endif

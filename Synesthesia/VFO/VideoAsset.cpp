@@ -55,20 +55,20 @@ VideoAsset::VideoAsset(bfs::path videoFile, bfs::path path, bool copy, bool proc
 //TODO: function to rewing syncronously the videos.
 //TODO: correct frame number getter!
 void VideoAsset::process() {
-//    HistogramHSV histograms(player);
+    HistogramHSV histograms(player);
     
     while(!player->isFinished) {
-//        histograms.iterate();
+        histograms.iterate();
         frame2Timestamp.push_back(std::make_pair(player->currentFrame,player->getPosition()));
         player->updateToNextFrame();
         
         std::cout << player->currentFrame << " " << player->getPosition() << std::endl;
     }
     
-//    this->histograms = histograms.histograms;
+    this->histograms = histograms.histograms;
 
-//    histograms.save();
-//    writeHistograms();
+    histograms.save();
+    writeHistograms();
 //    readHistograms();
 //    histograms.histograms = this->histograms;
 //    int ab; std::cin >> ab;
@@ -86,6 +86,8 @@ void VideoAsset::loadPlayerSync() {
         (*Tobago.log)(Log::ERROR) << "Error loading video " << path.string() << " : " << e.what();
         throw VideoAssetException("Could not load video file!");
     }
+    
+    player->enableTextureCache();
 
     if(!player->isReady)
         throw VideoAssetException("Could not load video file!");

@@ -177,7 +177,7 @@ void HistogramHSV::iterateCPU() {
     std::vector<double> hist(numBins, 0.0);
     rgb mean = {0.0, 0.0, 0.0};
 
-    for(int i=0; i<player->getNumChannels()*framesize; i+=player->getNumChannels()) {
+    for(int i=0; i<4*framesize; i+=4) {
         hsv chsv = rgb2hsv((rgb){image[i]/255.0f, image[i+1]/255.0f, image[i+2]/255.0f});
 
         if(!std::isnan(chsv.h)) hist[std::min(binsH-1, (int)(chsv.h/360.0*binsH))]++;

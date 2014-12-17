@@ -90,11 +90,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Synesthesia/VFO/VideoAsset.cpp"
-            timestampString = "440549115.731324"
+            timestampString = "440551586.980458"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "156"
-            endingLineNumber = "156"
+            startingLineNumber = "158"
+            endingLineNumber = "158"
             landmarkName = "VideoAsset::readHistograms()"
             landmarkType = "5">
          </BreakpointContent>
@@ -106,11 +106,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Synesthesia/VFO/VideoAsset.cpp"
-            timestampString = "440549115.731324"
+            timestampString = "440551586.980458"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "180"
-            endingLineNumber = "180"
+            startingLineNumber = "182"
+            endingLineNumber = "182"
             landmarkName = "VideoAsset::readHistograms()"
             landmarkType = "5">
          </BreakpointContent>
@@ -143,7 +143,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "36"
             endingLineNumber = "36"
-            landmarkName = "NOSXPlayer::dealloc()"
+            landmarkName = "NOSXPlayer::NOSXPlayer()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -159,7 +159,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "50"
             endingLineNumber = "50"
-            landmarkName = "NOSXPlayer::load(std::string url)"
+            landmarkName = "NOSXPlayer::dealloc()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -175,7 +175,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "112"
             endingLineNumber = "112"
-            landmarkName = "NOSXPlayer::createAssetReaderWithTimeRange(CMTimeRange timeRange)"
+            landmarkName = "NOSXPlayer::load(std::string url)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
