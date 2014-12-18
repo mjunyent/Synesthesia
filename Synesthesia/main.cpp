@@ -33,7 +33,59 @@ int main(int argc, const char * argv[]) {
                       "/Users/marc/Desktop/video/finalcountdown",
                       true,
                       false);
-        flasset.process();
+//        flasset.process();
+        Shader s;
+        s.loadFromFile(GL_VERTEX_SHADER, "simple.vert");
+        s.loadFromFile(GL_FRAGMENT_SHADER, "simple2.frag");
+        s.link();
+        s.addUniform("tex");
+        s.addUniform("mean");
+        
+        float quad[] = {
+            -1.0f,  1.0f,  0.0f, //0 UP, LEFT
+            1.0f,  1.0f,  0.0f, //1 UP, RIGHT
+            1.0f, -1.0f,  0.0f, //2 DOWN, RIGHT
+            -1.0f, -1.0f,  0.0f  //3 DOWN, LEFT
+        };
+        
+        GLushort quad_I[] = {
+            0, 3, 1,
+            1, 3, 2
+        };
+        
+        VBO qv(quad, 12);
+        IBO qi(quad_I, 6);
+        
+        VAO vao(GL_TRIANGLES);
+        vao.addAttribute(0, 3, &qv);
+        vao.addIBO(&qi);
+        
+        Texture *tt;
+
+        while(Tobago.enabled(0) && !flasset.player->isFinished) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            std::cout << flasset.player->currentFrame << "/" << flasset.player->getPosition() << std::endl;
+            
+            tt = flasset.player->getTexture();
+            if(tt != NULL) { tt->bindToGLSL(0); }
+            
+            flasset.player->updateToNextFrame();
+//            player.syncNextFrame();
+            //        player.update();
+            
+            s.use();
+            s("tex", 0);
+//            s("mean", new glm::vec3(histograms.rgbMeans.back().r, histograms.rgbMeans.back().g, histograms.rgbMeans.back().b));
+            vao.draw();
+            
+            Tobago.swap(0);
+            
+            if(glfwGetKey(context.window, GLFW_KEY_ESCAPE) && Tobago.enabled(0)) Tobago.stop(0);
+            
+            Tobago.log->flush();
+        }
+
     } catch (exception& e) {
         std::cout << e.what();
     }

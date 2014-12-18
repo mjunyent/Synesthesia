@@ -93,7 +93,7 @@ void ContextGLFW::stop() {
 
 void ContextGLFW::swap() {
 	glfwSwapBuffers(window);
-	glfwPollEvents();
+//	glfwPollEvents();
 }
 
 void glfw_framebuffersize_callback(GLFWwindow* window, int width, int height) {
