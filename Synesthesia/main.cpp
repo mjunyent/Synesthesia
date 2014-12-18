@@ -71,6 +71,10 @@ int main(int argc, const char * argv[]) {
             if(tt != NULL) { tt->bindToGLSL(0); }
             
             flasset.player->updateToNextFrame();
+            
+            unsigned char* px = flasset.player->getPixels();
+            
+            std::cout << (int)px[100*4+0] << " " << (int)px[100*4+1] << " " << (int)px[100*4+2] << " " << (int)px[100*4+3] << " " << std::endl;
 //            player.syncNextFrame();
             //        player.update();
             
