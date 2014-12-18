@@ -49,7 +49,7 @@ void NOSXPlayer::dealloc() {
     asset = nil;
 
     if(videoSampleBuffer) {
-        CFRelease((CMSampleBufferRef*)videoSampleBuffer);
+        CFRelease(videoSampleBuffer);
         videoSampleBuffer = nil;
     }
     
@@ -85,7 +85,7 @@ bool NOSXPlayer::load(std::string url) {
     createAssetReaderWithTimeRange(CMTimeRangeMake(kCMTimeZero, duration));
 
     videoSampleBuffer = [((AVAssetReaderTrackOutput*)assetReaderVideoTrackOutput) copyNextSampleBuffer];
-    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer((CMSampleBufferRef)videoSampleBuffer);
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(videoSampleBuffer);
     CVPixelBufferLockBaseAddress(imageBuffer, 0);
     width = CVPixelBufferGetWidth(imageBuffer);
     height = CVPixelBufferGetHeight(imageBuffer);
@@ -131,7 +131,7 @@ void NOSXPlayer::unload() {
     asset = nil;
     
     if(videoSampleBuffer) {
-        CFRelease((CMSampleBufferRef)videoSampleBuffer);
+        CFRelease(videoSampleBuffer);
     }
 
     textureCacheEnabled = false;
@@ -185,7 +185,7 @@ void NOSXPlayer::updateToNextFrame() {
         //TODO createAssetReader with time range or ERROR
         return;
     }
-    
+
     if (((AVAssetReader*)assetReader).status != AVAssetReaderStatusReading) {
         //ERROR TODO
         return;
@@ -203,12 +203,12 @@ void NOSXPlayer::updateToNextFrame() {
         
         if(videoBufferTemp) {
             if(videoSampleBuffer) {
-                CFRelease(((CMSampleBufferRef)videoSampleBuffer));
+                CFRelease(videoSampleBuffer);
                 videoSampleBuffer = nil;
             }
             videoSampleBuffer = videoBufferTemp;
             
-            videoSampleTime = CMSampleBufferGetPresentationTimeStamp(((CMSampleBufferRef)videoSampleBuffer));
+            videoSampleTime = CMSampleBufferGetPresentationTimeStamp(videoSampleBuffer);
             
             copiedNewSamples = true;
         } else {
@@ -239,7 +239,7 @@ unsigned char* NOSXPlayer::getPixels() {
 
     CGImageRef currentFrameRef;
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer((CMSampleBufferRef)videoSampleBuffer);
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(videoSampleBuffer);
 
     /*Lock the image buffer*/
     CVPixelBufferLockBaseAddress(imageBuffer, 0);
@@ -357,7 +357,7 @@ bool NOSXPlayer::enableTextureCache() {
 
 
 void NOSXPlayer::initTextureCache() {
-    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer((CMSampleBufferRef)videoSampleBuffer);
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(videoSampleBuffer);
 
     if(imageBuffer == nil) return;
 

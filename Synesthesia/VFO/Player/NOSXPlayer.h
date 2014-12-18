@@ -9,10 +9,11 @@
 #ifndef Synesthesia_NOSXPlayer_h
 #define Synesthesia_NOSXPlayer_h
 
+#include "Tobago.h"
 #include <string>
 #include <CoreMedia/CMTime.h>
 #include <CoreMedia/CMTimeRange.h>
-#include "Tobago.h"
+#include <CoreMedia/CMSampleBuffer.h>
 #include <string>
 
 class NOSXPlayerException : public exception {
@@ -58,8 +59,8 @@ private:
     void* asset;
     void* assetReader;
     void* assetReaderVideoTrackOutput;
-    void* videoSampleBuffer;
-    
+    CMSampleBufferRef videoSampleBuffer;
+
     CMTime duration;
     CMTime videoSampleTime;
     CMTime videoSampleTimePrev;//maybe can be local variable in updatetonextframe.

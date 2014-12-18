@@ -23,7 +23,7 @@ int main(int argc, const char * argv[]) {
     Tobago.init(&context);
     Tobago.use(0);
 
-//    TOBAGO::initOCLwithCurrentOGLcontext();
+    TOBAGO::initOCLwithCurrentOGLcontext();
 
 
     std::cout << "END" << std::endl;
