@@ -15,9 +15,10 @@
 #include <ctime>
 #include <vector>
 #include <utility>
+#include <set>
 
 #ifdef __APPLE__
-#include "NOSXPlayer.h"
+#include "OSXFrameGetter.h"
 #endif
 
 namespace bfs = boost::filesystem;
@@ -63,7 +64,7 @@ public:
     bfs::path path;
     bfs::path video_path;
 
-    NOSXPlayer* player;
+    FrameGetter * player;
 
     //class to read info from files and those things.
     //vector<whatever> shotboundaries;
@@ -71,6 +72,9 @@ public:
     //features...
     
     std::vector< std::vector<double> > histograms;
+    std::vector< std::pair<int, double> > frame2Timestamp;
+    std::vector<int> boundaries;
+    std::set<int> flashes;
     
 private:
     void readInfoFile();
@@ -90,7 +94,6 @@ private:
     
     void loadPlayerSync();
     
-    std::vector< std::pair<int, double> > frame2Timestamp;
 };
 
 #endif /* defined(__Synesthesia__VideoAsset__) */

@@ -52,44 +52,43 @@ VideoAsset::VideoAsset(bfs::path videoFile, bfs::path path, bool copy, bool proc
     }
 }
 
-//TODO: function to rewing syncronously the videos.
-//TODO: correct frame number getter!
 void VideoAsset::process() {
     HistogramHSV histograms(player);
-    
-    while(!player->isFinished) {
+
+    while(!player->isFinished()) {
         histograms.iterate();
-        frame2Timestamp.push_back(std::make_pair(player->currentFrame,player->getPosition()));
-        player->updateToNextFrame();
+        frame2Timestamp.push_back(std::make_pair(player->getFrameNum(),player->getCurrentTime()));
+        player->update();
         
-        std::cout << player->currentFrame << " " << player->getPosition() << std::endl;
+        std::cout << player->getFrameNum() << " " << player->getCurrentTime() << std::endl;
     }
     
+    ShotDetector shotdetector(&histograms);
+    shotdetector.process();
+    boundaries = shotdetector.boundaries;
+    flashes = shotdetector.flashes;
+
     this->histograms = histograms.histograms;
 
-    histograms.save();
     writeHistograms();
-//    readHistograms();
-//    histograms.histograms = this->histograms;
-//    int ab; std::cin >> ab;
-//    histograms.save();
+    writeTimetable();
+    writeShotBoundaries();
 }
 
 void VideoAsset::loadPlayerSync() {
     #ifdef __APPLE__
-        player = new NOSXPlayer();
+        player = new OSXFrameGetter();
+        ((OSXFrameGetter*)player)->enableTextureCache();
     #endif
     
     try {
         player->load(video_path.string());
-    } catch (NOSXPlayerException& e) {
+    } catch (OSXFrameGetterException& e) {
         (*Tobago.log)(Log::ERROR) << "Error loading video " << path.string() << " : " << e.what();
         throw VideoAssetException("Could not load video file!");
     }
-    
-    player->enableTextureCache();
 
-    if(!player->isReady)
+    if(!player->isReady())
         throw VideoAssetException("Could not load video file!");
 }
 
@@ -147,11 +146,85 @@ void VideoAsset::readTimetable() {
     bfs::path timetable_path = path;
     timetable_path /= "timeTable";
 
+    if(!bfs::exists(timetable_path)) {
+        hasTimetable = false;
+        return;
+    }
     
+    std::ifstream timetableFile(timetable_path.string(), std::ifstream::binary);
+    if(!timetableFile.is_open()) throw VideoAssetException("Timetable file exists but couldn't be oppened");
+    
+    unsigned long s;
+    timetableFile.read(reinterpret_cast<char*>(&s), sizeof(unsigned long));
+    
+    if(!timetableFile.good() || s <= 0) throw VideoAssetException("Wrong timetable file format!");
+    
+    frame2Timestamp = std::vector< std::pair<int, double> >(s);
+    
+    timetableFile.read(reinterpret_cast<char*>(&frame2Timestamp[0]), sizeof(std::pair<int,double>)*frame2Timestamp.size());
+    
+    hasTimetable = true;
+}
+void VideoAsset::writeTimetable() {
+    bfs::path timetable_path = path;
+    timetable_path /= "timeTable";
+    
+    std::ofstream timetableFile(timetable_path.string(), std::ofstream::binary);
+    
+    if(!timetableFile.is_open()) throw VideoAssetException("Could not open or create timetable file to write");
+    
+    unsigned long s = frame2Timestamp.size();
+    timetableFile.write(reinterpret_cast<const char*>(&s), sizeof(unsigned long));
+    
+    timetableFile.write(reinterpret_cast<const char*>(&frame2Timestamp[0]), sizeof(std::pair<int,double>)*frame2Timestamp.size());
+    
+    timetableFile.close();
+}
+
+void VideoAsset::writeShotBoundaries() {
+    bfs::path shotboundaries_path = path;
+    shotboundaries_path /= "shotBoundaries";
+    
+    std::ofstream shotboundariesFile(shotboundaries_path.string());
+    
+    if(!shotboundariesFile.is_open()) throw VideoAssetException("Could not open or create shotboundaries files to write");
+
+    for(int i=0; i<boundaries.size(); i++) {
+        shotboundariesFile << boundaries[i] << std::endl;
+    }
+    shotboundariesFile << -1 << std::endl;
+    for (int i : flashes) {
+        shotboundariesFile << i << std::endl;
+    }
+    return;
 }
 
 void VideoAsset::readShotBoundaries() {
+    bfs::path shotboundaries_path = path;
+    shotboundaries_path /= "shotBoundaries";
+
+    if(!bfs::exists(shotboundaries_path)) {
+        hasShotBoundaries = false;
+        return;
+    }
+
+    std::ifstream shotboundariesFile(shotboundaries_path.string());
+
+    boundaries = std::vector<int>();
+    flashes = std::set<int>();
     
+    int a;
+    shotboundariesFile >> a;
+    while(a >= 0) {
+        boundaries.push_back(a);
+        shotboundariesFile >> a;
+    }
+
+    while(shotboundariesFile >> a) {
+        if(a != -1) flashes.insert(a);
+    }
+
+    hasShotBoundaries = true;
 }
 
 void VideoAsset::readHistograms() {
@@ -181,7 +254,6 @@ void VideoAsset::readHistograms() {
 
     hasHistograms = true;
 }
-
 void VideoAsset::writeHistograms() {
     bfs::path histograms_path = path;
     histograms_path /= "histograms";

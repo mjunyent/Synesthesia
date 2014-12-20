@@ -39,7 +39,6 @@
 		49B7B1A81A2DB236009BED9E /* OCLHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49B7B1A61A2DB236009BED9E /* OCLHelper.cpp */; };
 		49BEABC31A44DD390002BF26 /* AVFoundationFrameGetter.m in Sources */ = {isa = PBXBuildFile; fileRef = 49BEABC21A44DD390002BF26 /* AVFoundationFrameGetter.m */; };
 		49BEABC71A44EC5F0002BF26 /* OSXFrameGetter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49BEABC51A44EC5E0002BF26 /* OSXFrameGetter.mm */; };
-		49C3C7D31A3C64AA00071D51 /* NOSXPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49C3C7D21A3C64AA00071D51 /* NOSXPlayer.mm */; };
 		49F029431A176C5100B355BA /* VideoAsset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49F029411A176C5100B355BA /* VideoAsset.cpp */; };
 		49FCEB811A25EF6500977A78 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49FCEB801A25EF6500977A78 /* OpenCL.framework */; };
 /* End PBXBuildFile section */
@@ -114,14 +113,13 @@
 		49B015D619F93E3600112A25 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw3.a; path = libs/libglfw3.a; sourceTree = "<group>"; };
 		49B2E42B1A25D5E000C5ECAE /* HistogramHSV.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HistogramHSV.cpp; sourceTree = "<group>"; };
 		49B2E42C1A25D5E000C5ECAE /* HistogramHSV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistogramHSV.h; sourceTree = "<group>"; };
+		49B74F871A45943300A51AE0 /* FrameGetter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameGetter.h; sourceTree = "<group>"; };
 		49B7B1A61A2DB236009BED9E /* OCLHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLHelper.cpp; sourceTree = "<group>"; };
 		49B7B1A71A2DB236009BED9E /* OCLHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLHelper.h; sourceTree = "<group>"; };
 		49BEABC21A44DD390002BF26 /* AVFoundationFrameGetter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVFoundationFrameGetter.m; sourceTree = "<group>"; };
 		49BEABC41A44DD4F0002BF26 /* AVFoundationFrameGetter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVFoundationFrameGetter.h; sourceTree = "<group>"; };
 		49BEABC51A44EC5E0002BF26 /* OSXFrameGetter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OSXFrameGetter.mm; sourceTree = "<group>"; };
 		49BEABC61A44EC5E0002BF26 /* OSXFrameGetter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSXFrameGetter.h; sourceTree = "<group>"; };
-		49C3C7D21A3C64AA00071D51 /* NOSXPlayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NOSXPlayer.mm; sourceTree = "<group>"; };
-		49C3C7D41A3C64C800071D51 /* NOSXPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NOSXPlayer.h; sourceTree = "<group>"; };
 		49F029411A176C5100B355BA /* VideoAsset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VideoAsset.cpp; sourceTree = "<group>"; };
 		49F029421A176C5100B355BA /* VideoAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoAsset.h; sourceTree = "<group>"; };
 		49FCEB801A25EF6500977A78 /* OpenCL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenCL.framework; path = System/Library/Frameworks/OpenCL.framework; sourceTree = SDKROOT; };
@@ -197,11 +195,10 @@
 				49479B671A13BEEC00EE922E /* Player.h */,
 				49479B6A1A13C09A00EE922E /* OSXPlayer.h */,
 				49479B691A13C09A00EE922E /* OSXPlayer.mm */,
-				49C3C7D41A3C64C800071D51 /* NOSXPlayer.h */,
-				49C3C7D21A3C64AA00071D51 /* NOSXPlayer.mm */,
 				49479B5C1A13BEA100EE922E /* OSX */,
 				49BEABC51A44EC5E0002BF26 /* OSXFrameGetter.mm */,
 				49BEABC61A44EC5E0002BF26 /* OSXFrameGetter.h */,
+				49B74F871A45943300A51AE0 /* FrameGetter.h */,
 			);
 			path = Player;
 			sourceTree = "<group>";
@@ -412,7 +409,6 @@
 				49B015CC19F91D2000112A25 /* lodepng.cpp in Sources */,
 				49479B631A13BEA100EE922E /* OFAVFoundationVideoPlayer.m in Sources */,
 				4935546A1A27460400F435AA /* AssetLibrary.cpp in Sources */,
-				49C3C7D31A3C64AA00071D51 /* NOSXPlayer.mm in Sources */,
 				49B015C819F91D2000112A25 /* Buffer_Object.cpp in Sources */,
 				49B015D119F91D2000112A25 /* log.cpp in Sources */,
 				49747E971A264CCD004B1241 /* ShotDetector.cpp in Sources */,

@@ -8,15 +8,15 @@
 
 #include "HistogramHSV.h"
 
-HistogramHSV::HistogramHSV(NOSXPlayer* p) {
+HistogramHSV::HistogramHSV(FrameGetter* p) {
     this->player = p;
-    
+
     binsH = 16;
     binsS = 4;
     binsV = 4;
     numBins = binsH + binsS + binsV;
-    
-    framesize = player->width*player->height;
+
+    framesize = player->getWidth()*player->getHeight();
 
     useOCL = false;
     if(Tobago.clcontext != NULL) {
@@ -61,8 +61,8 @@ HistogramHSV::HistogramHSV(NOSXPlayer* p) {
             local_work_size[0] = gsize[0];
             local_work_size[1] = gsize[1];
             
-            global_work_size[0] = ((player->width + gsize[0] - 1) / gsize[0]);
-            global_work_size[1] = ((player->height + gsize[1] - 1) / gsize[1]);
+            global_work_size[0] = ((player->getWidth() + gsize[0] - 1) / gsize[0]);
+            global_work_size[1] = ((player->getHeight() + gsize[1] - 1) / gsize[1]);
             
             num_groups = global_work_size[0] * global_work_size[1];
             global_work_size[0] *= gsize[0];

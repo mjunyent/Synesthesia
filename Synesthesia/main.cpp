@@ -12,7 +12,6 @@
 #include "VFO/VideoAsset.h"
 #include "VFO/AssetLibrary.h"
 
-#include "VFO/Player/NOSXPlayer.h"
 #include "VFO/Player/OSXFrameGetter.h"
 
 #include <unistd.h>
@@ -26,72 +25,14 @@ int main(int argc, const char * argv[]) {
 
     TOBAGO::initOCLwithCurrentOGLcontext();
 
-
     std::cout << "END" << std::endl;
-    
-    OSXFrameGetter suppaVideo;
-    suppaVideo.load("/Users/marc/Documents/Developing/Synesthesia/build/Europe.mp4");
-    suppaVideo.enableTextureCache();
 
-    Shader s;
-    s.loadFromFile(GL_VERTEX_SHADER, "simple.vert");
-    s.loadFromFile(GL_FRAGMENT_SHADER, "simple2.frag");
-    s.link();
-    s.addUniform("tex");
-    s.addUniform("mean");
-    
-    float quad[] = {
-        -1.0f,  1.0f,  0.0f, //0 UP, LEFT
-        1.0f,  1.0f,  0.0f, //1 UP, RIGHT
-        1.0f, -1.0f,  0.0f, //2 DOWN, RIGHT
-        -1.0f, -1.0f,  0.0f  //3 DOWN, LEFT
-    };
-    
-    GLushort quad_I[] = {
-        0, 3, 1,
-        1, 3, 2
-    };
-    
-    VBO qv(quad, 12);
-    IBO qi(quad_I, 6);
-    
-    VAO vao(GL_TRIANGLES);
-    vao.addAttribute(0, 3, &qv);
-    vao.addIBO(&qi);
-    
-    Texture *tt;
-    
-    while(Tobago.enabled(0) && !suppaVideo.isFinished()) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        std::cout << suppaVideo.getFrameNum() << "/" << suppaVideo.getCurrentTime() << std::endl;
-        
-        tt = suppaVideo.getTexture();
-        if(tt != NULL) { tt->bindToGLSL(0); }
-        
-        suppaVideo.update();
-        
-        s.use();
-        s("tex", 0);
-        vao.draw();
-        
-        Tobago.swap(0);
-        
-        if(glfwGetKey(context.window, GLFW_KEY_ESCAPE) && Tobago.enabled(0)) Tobago.stop(0);
-        
-        Tobago.log->flush();
-    }
-
-    
-    
-    
-    
     try {
     VideoAsset flasset("/Users/marc/Documents/Developing/Synesthesia/build/Europe.mp4",
                       "/Users/marc/Desktop/video/finalcountdown",
                       true,
                       false);
-//        flasset.process();
+        flasset.process();
 /*        Shader s;
         s.loadFromFile(GL_VERTEX_SHADER, "simple.vert");
         s.loadFromFile(GL_FRAGMENT_SHADER, "simple2.frag");
@@ -151,11 +92,6 @@ int main(int argc, const char * argv[]) {
     } catch (exception& e) {
         std::cout << e.what();
     }
-
-
-    NOSXPlayer suppaPlayer;
-    suppaPlayer.load("/Users/marc/Documents/Developing/Synesthesia/build/Europe.mp4");
-
 
 
     OSXPlayer ol;
@@ -247,7 +183,7 @@ int main(int argc, const char * argv[]) {
     std::cout << "LOADING" << std::endl;
     histograms.load();
     std::cout << "Loaded" << std::endl;
-    
+
     std::cout << "CALCULATING" << std::endl;
     ShotDetector shotdetector(&histograms);
     shotdetector.process();

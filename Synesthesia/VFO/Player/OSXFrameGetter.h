@@ -9,8 +9,7 @@
 #ifndef __Synesthesia__OSXFrameGetter__
 #define __Synesthesia__OSXFrameGetter__
 
-#include "Tobago.h"
-#include <string>
+#include "FrameGetter.h"
 
 class OSXFrameGetterException : public exception {
 public:
@@ -21,7 +20,7 @@ public:
     };
 };
 
-class OSXFrameGetter {
+class OSXFrameGetter : public FrameGetter {
 public:
     OSXFrameGetter();
     ~OSXFrameGetter();

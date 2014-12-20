@@ -19,7 +19,7 @@ public:
     ShotDetector(HistogramHSV* histograms);
 
     void process();
-    
+
     std::vector<int> boundaries;
     std::set<int> flashes;
 
