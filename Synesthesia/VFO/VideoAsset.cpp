@@ -18,6 +18,14 @@ VideoAsset::VideoAsset(bfs::path path) : path(path) {
         readShotBoundaries();
         readHistograms();
         readMeans();
+        
+        if(hasTimetable && hasShotBoundaries && hasHistograms && hasMeans) {
+            if(frame2Timestamp.size() != histograms.size() ||
+               frame2Timestamp.size() != rgbMeans.size()) {
+                throw VideoAssetException("Info files have wrong format.");
+            }
+            isReady = true;
+        }
 
         loadPlayerSync();
     } catch (const bfs::filesystem_error& ex) {
@@ -44,8 +52,6 @@ VideoAsset::VideoAsset(bfs::path videoFile, bfs::path path, bool copy, bool proc
         hasShotBoundaries = false;
         hasHistograms = false;
         hasMeans = false;
-
-        
     } catch (const bfs::filesystem_error& ex) {
         (*Tobago.log)(Log::ERROR) << "Error creating video asset " << path.string() << ": " << ex.what();
         throw VideoAssetException(ex.what());
@@ -69,10 +75,18 @@ void VideoAsset::process() {
     flashes = shotdetector.flashes;
 
     this->histograms = histograms.histograms;
+    this->rgbMeans = histograms.rgbMeans;
 
     writeHistograms();
     writeTimetable();
     writeShotBoundaries();
+    writeMeans();
+
+    hasTimetable = true;
+    hasShotBoundaries = true;
+    hasHistograms = true;
+    hasMeans = true;
+    isReady = true;
 }
 
 void VideoAsset::loadPlayerSync() {
@@ -83,7 +97,7 @@ void VideoAsset::loadPlayerSync() {
     
     try {
         player->load(video_path.string());
-    } catch (OSXFrameGetterException& e) {
+    } catch (FrameGetterException& e) {
         (*Tobago.log)(Log::ERROR) << "Error loading video " << path.string() << " : " << e.what();
         throw VideoAssetException("Could not load video file!");
     }
@@ -181,24 +195,6 @@ void VideoAsset::writeTimetable() {
     timetableFile.close();
 }
 
-void VideoAsset::writeShotBoundaries() {
-    bfs::path shotboundaries_path = path;
-    shotboundaries_path /= "shotBoundaries";
-    
-    std::ofstream shotboundariesFile(shotboundaries_path.string());
-    
-    if(!shotboundariesFile.is_open()) throw VideoAssetException("Could not open or create shotboundaries files to write");
-
-    for(int i=0; i<boundaries.size(); i++) {
-        shotboundariesFile << boundaries[i] << std::endl;
-    }
-    shotboundariesFile << -1 << std::endl;
-    for (int i : flashes) {
-        shotboundariesFile << i << std::endl;
-    }
-    return;
-}
-
 void VideoAsset::readShotBoundaries() {
     bfs::path shotboundaries_path = path;
     shotboundaries_path /= "shotBoundaries";
@@ -225,6 +221,23 @@ void VideoAsset::readShotBoundaries() {
     }
 
     hasShotBoundaries = true;
+}
+void VideoAsset::writeShotBoundaries() {
+    bfs::path shotboundaries_path = path;
+    shotboundaries_path /= "shotBoundaries";
+    
+    std::ofstream shotboundariesFile(shotboundaries_path.string());
+    
+    if(!shotboundariesFile.is_open()) throw VideoAssetException("Could not open or create shotboundaries files to write");
+    
+    for(int i=0; i<boundaries.size(); i++) {
+        shotboundariesFile << boundaries[i] << std::endl;
+    }
+    shotboundariesFile << -1 << std::endl;
+    for (int i : flashes) {
+        shotboundariesFile << i << std::endl;
+    }
+    return;
 }
 
 void VideoAsset::readHistograms() {
@@ -269,8 +282,42 @@ void VideoAsset::writeHistograms() {
     histogramFile.close();
 }
 
+void VideoAsset::writeMeans() {
+    bfs::path means_path = path;
+    means_path /= "means";
+
+    std::ofstream meansFile(means_path.string(), std::ofstream::binary);
+    if(!meansFile.is_open()) throw VideoAssetException("Could not open or create means file to write");
+
+    unsigned long s = rgbMeans.size();
+    meansFile.write(reinterpret_cast<const char*>(&s), sizeof(unsigned long));
+
+    meansFile.write(reinterpret_cast<const char*>(&rgbMeans[0]), sizeof(rgb)*rgbMeans.size());
+
+    meansFile.close();
+}
 void VideoAsset::readMeans() {
+    bfs::path means_path = path;
+    means_path /= "means";
+
+    if(!bfs::exists(means_path)) {
+        hasMeans = false;
+        return;
+    }
     
+    std::ifstream meansFile(means_path.string(), std::ifstream::binary);
+    if(!meansFile.is_open()) throw VideoAssetException("Means file exists but couldn't be oppened");
+
+    unsigned long s;
+    meansFile.read(reinterpret_cast<char*>(&s), sizeof(unsigned long));
+
+    if(!meansFile.good() || s <= 0) throw VideoAssetException("Wrong means file format!");
+
+    rgbMeans = std::vector<rgb>(s);
+
+    meansFile.read(reinterpret_cast<char*>(&rgbMeans[0]), s*sizeof(rgb));
+
+    hasMeans = true;
 }
 
 

@@ -17,6 +17,8 @@
 #include <utility>
 #include <set>
 
+#include "FrameGetter.h"
+
 #ifdef __APPLE__
 #include "OSXFrameGetter.h"
 #endif
@@ -60,22 +62,19 @@ public:
     bool hasShotBoundaries;
     bool hasHistograms;
     bool hasMeans;
+    bool isReady; //true if has everything.
 
     bfs::path path;
     bfs::path video_path;
 
     FrameGetter * player;
 
-    //class to read info from files and those things.
-    //vector<whatever> shotboundaries;
-    //whatever histograms;
-    //features...
-    
     std::vector< std::vector<double> > histograms;
     std::vector< std::pair<int, double> > frame2Timestamp;
     std::vector<int> boundaries;
     std::set<int> flashes;
-    
+    std::vector<rgb> rgbMeans;
+
 private:
     void readInfoFile();
     void writeInfoFile();
@@ -93,7 +92,6 @@ private:
     void writeMeans();
     
     void loadPlayerSync();
-    
 };
 
 #endif /* defined(__Synesthesia__VideoAsset__) */

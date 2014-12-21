@@ -11,15 +11,6 @@
 
 #include "FrameGetter.h"
 
-class OSXFrameGetterException : public exception {
-public:
-    OSXFrameGetterException(std::string s) : s(s) { };
-    std::string s;
-    virtual const char* what() const throw() {
-        return s.c_str();
-    };
-};
-
 class OSXFrameGetter : public FrameGetter {
 public:
     OSXFrameGetter();

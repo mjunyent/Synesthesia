@@ -12,6 +12,15 @@
 #include "Tobago/Tobago.h"
 #include <string>
 
+class FrameGetterException : public exception {
+public:
+    FrameGetterException(std::string s) : s(s) { };
+    std::string s;
+    virtual const char* what() const throw() {
+        return s.c_str();
+    };
+};
+
 class FrameGetter {
 public:
     virtual void load(std::string url) = 0;

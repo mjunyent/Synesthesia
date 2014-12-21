@@ -33,6 +33,10 @@ int main(int argc, const char * argv[]) {
                       true,
                       false);
         flasset.process();
+        
+        
+        VideoAsset cflasset("/Users/marc/Desktop/video/finalcountdown");
+        
 /*        Shader s;
         s.loadFromFile(GL_VERTEX_SHADER, "simple.vert");
         s.loadFromFile(GL_FRAGMENT_SHADER, "simple2.frag");

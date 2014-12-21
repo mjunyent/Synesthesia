@@ -33,7 +33,7 @@ void OSXFrameGetter::load(std::string url) {
     NSString* videoPath = [NSString stringWithUTF8String:url.c_str()];
     BOOL bOk = [((AVFoundationFrameGetter*)frameGetter) load:videoPath];
     if(!bOk || !isReady()) {
-        throw OSXFrameGetterException("Could not load video " + url);
+        throw FrameGetterException("Could not load video " + url);
     }
 
     if(pixels != NULL) free(pixels);
@@ -67,7 +67,7 @@ void OSXFrameGetter::update() {
     BOOL bOk = [((AVFoundationFrameGetter*)frameGetter) update];
     
     if(!bOk && !isFinished())
-        throw OSXFrameGetterException("Could not update the video");
+        throw FrameGetterException("Could not update the video");
     
     if(isNewFrame()) {
         updatePixels = true;
