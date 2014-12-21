@@ -38,16 +38,17 @@ public:
     AssetLibrary(std::string path);
 
     void loadAssets();
-//    void loadAsset(std::string name);
+    void loadAsset(bfs::path p);
 
-//    bool exists(std::string name);
+    bool addAsset(bfs::path videoFile, bool copy);
+    void removeAsset(std::string va);
 
-//    void addAsset(VideoAsset* va);
-//    void removeAsset(VideoAsset* va);
+    void process();
+
+    std::vector<VideoAsset> va;
     
+    void listAssets(); //debug
 
-//    std::vector<VideoAsset*> va;
-    
 private:
     bfs::path path;
     bfs::path video_path;

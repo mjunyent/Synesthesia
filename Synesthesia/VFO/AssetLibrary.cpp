@@ -35,14 +35,19 @@ AssetLibrary::AssetLibrary(std::string url) : path(url) {
         if(!found) {
             video_path = path;
             video_path /= "video";
-            if(!bfs::create_directory(video_path))
+            if(!bfs::create_directory(video_path)) {
                 (*Tobago.log)(Log::ERROR) << "Could not create video folder " << video_path.string();
+                exit(EXIT_FAILURE);
+            }
         } else {
-            if(!bfs::is_directory(video_path))
+            if(!bfs::is_directory(video_path)) {
                 (*Tobago.log)(Log::ERROR) << "Specified path is not a directory: " << video_path.string();
+                exit(EXIT_FAILURE);
+            }
         }
     } catch (const bfs::filesystem_error& ex) {
         (*Tobago.log)(Log::ERROR) << "Exception trying to open " << path.string() << ": " << ex.what();
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -52,19 +57,63 @@ void AssetLibrary::loadAssets() {
     try {
         for(bfs::path& p : vvideo_paths) {
             if(bfs::is_directory(p)) { //we ignore files that are not a directory.
-                std::cout << p << std::endl;
-                try {
-                    VideoAsset v(p);
-                } catch (exception& e) {
-                    std::cout << p << std::endl;
-                    std::cout << e.what() << std::endl;
-                }
-//                if(v.isValid()) {}
+                loadAsset(p);
             }
         }
     } catch (const bfs::filesystem_error& ex) {
         (*Tobago.log)(Log::ERROR) << "Exception trying to open something inside " << video_path.string() << ": " << ex.what();
+        exit(EXIT_FAILURE);
     }
+}
+
+void AssetLibrary::loadAsset(bfs::path p) {
+    try {
+        VideoAsset v(p);
+        va.push_back(v);
+    } catch (exception& e) {
+        Tobago.log->write(Log::WARNING) << "Exception loading asset " << p << ": " << e.what() << " - The asset has been ignored.";
+    }
+}
+
+bool AssetLibrary::addAsset(bfs::path videoFile, bool copy) {
+    bfs::path assetPath = video_path;
+    assetPath /= videoFile.stem().string();
+
+    int i=1;
+    while(bfs::exists(assetPath)) {
+        assetPath = video_path;
+        assetPath /= videoFile.stem().string() + std::to_string(i);
+        i++;
+    }
+
+    if(!bfs::create_directory(assetPath)) {
+        (*Tobago.log)(Log::ERROR) << "Could not create asset folder " << assetPath.string();
+        return false;
+    }
+
+    try {
+        VideoAsset v(videoFile, assetPath, copy);
+        va.push_back(v);
+    } catch(exception& e) {
+        Tobago.log->write(Log::WARNING) << "Exception creating asset " << videoFile << ": " << e.what() << " - The asset has not been created.";
+        bfs::remove_all(assetPath);
+        return false;
+    }
+    return true;
+}
+
+void AssetLibrary::removeAsset(std::string name) {
+    std::vector<VideoAsset> cva;
+
+    for(VideoAsset& v : va) {
+        if(v.name == name) {
+            bfs::remove_all(v.path);
+        } else {
+            cva.push_back(v);
+        }
+    }
+    
+    va = cva;
 }
 
 void AssetLibrary::scanVideoFolder() {
@@ -74,29 +123,24 @@ void AssetLibrary::scanVideoFolder() {
         std::sort(vvideo_paths.begin(), vvideo_paths.end());
     } catch (const bfs::filesystem_error& ex) {
         (*Tobago.log)(Log::ERROR) << "Exception trying to open " << video_path.string() << ": " << ex.what();
+        exit(EXIT_FAILURE);
     }
 }
 
 
+void AssetLibrary::process() {
+    for(VideoAsset& v : va) {
+        std::cout << v.name << std::endl;
+        if(!v.isReady) v.process();
+    }
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void AssetLibrary::listAssets() {
+    for(VideoAsset& v : va) {
+        std::cout << v.name << std::endl;
+    }
+}
 
 
 

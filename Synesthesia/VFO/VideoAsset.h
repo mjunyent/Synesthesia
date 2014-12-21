@@ -52,7 +52,7 @@ public:
     VideoAsset(bfs::path path);
     VideoAsset(bfs::path videoFile,
                bfs::path path,
-               bool copy, bool process);
+               bool copy);
     
     
     void process();
@@ -64,6 +64,7 @@ public:
     bool hasMeans;
     bool isReady; //true if has everything.
 
+    std::string name;
     bfs::path path;
     bfs::path video_path;
 

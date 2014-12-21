@@ -13,12 +13,14 @@
 
 VideoAsset::VideoAsset(bfs::path path) : path(path) {
     try {
+        name = path.filename().string();
         readInfoFile();
         readTimetable();
         readShotBoundaries();
         readHistograms();
         readMeans();
-        
+        isReady = false;
+
         if(hasTimetable && hasShotBoundaries && hasHistograms && hasMeans) {
             if(frame2Timestamp.size() != histograms.size() ||
                frame2Timestamp.size() != rgbMeans.size()) {
@@ -34,8 +36,11 @@ VideoAsset::VideoAsset(bfs::path path) : path(path) {
     }
 }
 
-VideoAsset::VideoAsset(bfs::path videoFile, bfs::path path, bool copy, bool process) : path(path) {
+VideoAsset::VideoAsset(bfs::path videoFile, bfs::path path, bool copy) : path(path) {
     try {
+        name = path.filename().string();
+        if(!bfs::exists(videoFile)) throw VideoAssetException("video File doesn't exist!");
+        if(!bfs::exists(path) || !bfs::is_directory(path)) throw VideoAssetException("Destination folder doesn't exist");
         if(copy) {
             video_path = path;
             video_path /= videoFile.filename();
@@ -52,6 +57,7 @@ VideoAsset::VideoAsset(bfs::path videoFile, bfs::path path, bool copy, bool proc
         hasShotBoundaries = false;
         hasHistograms = false;
         hasMeans = false;
+        isReady = false;
     } catch (const bfs::filesystem_error& ex) {
         (*Tobago.log)(Log::ERROR) << "Error creating video asset " << path.string() << ": " << ex.what();
         throw VideoAssetException(ex.what());
