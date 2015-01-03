@@ -14,9 +14,14 @@
 
 #include "VFO/Player/OSXFrameGetter.h"
 
+#include "AFO/AudioInput.h"
+
 #include <unistd.h>
 
 int main(int argc, const char * argv[]) {
+    AudioInput::printDevicesInfo();
+    
+    
     TobagoInitGLFW(3, 3);
     
     ContextGLFW context = ContextGLFW(1280, 720, "Synesthesia", NULL, NULL);
