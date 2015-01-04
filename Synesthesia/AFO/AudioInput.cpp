@@ -65,3 +65,52 @@ void AudioInput::printDevicesInfo() {
     }
 }
 
+
+AudioInput::AudioInput(unsigned int device, unsigned int channel, unsigned int bufferSize) : device(device), channel(channel), bufferSize(bufferSize) {
+    RtAudio::StreamParameters parameters;
+
+    if(device == -1)
+        parameters.deviceId = adc.getDefaultInputDevice();
+    else
+        parameters.deviceId = device;
+
+    parameters.nChannels = 1;
+    parameters.firstChannel = channel;
+
+    sampleRate = 44100; //TODO CHECK IF SR is not available
+
+    adc.openStream(NULL, &parameters, RTAUDIO_FLOAT32, sampleRate, &bufferSize, &AudioInput::record, this);
+}
+
+void AudioInput::start() {
+    adc.startStream();
+}
+
+int AudioInput::record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData) {
+
+    if(status) (Tobago.log)->write(Log::WARNING) << "Stream overflow detected!";
+    else {
+        AudioInput* ai = (AudioInput*) userData;
+        float* r = (float*) inputBuffer;
+        ai->record(r, nBufferFrames, streamTime);
+    }
+
+    return 0;
+}
+
+void AudioInput::record(float *r, int nbf, double st) {
+    this->f(r, nbf, st);
+}
+
+void AudioInput::setCallback(std::function<void (float *, int, double)> f) {
+    this->f = f;
+}
+
+
+
+
+
+
+
+
+

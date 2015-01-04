@@ -14,6 +14,7 @@
 		49479B631A13BEA100EE922E /* OFAVFoundationVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 49479B5E1A13BEA100EE922E /* OFAVFoundationVideoPlayer.m */; };
 		49479B641A13BEA100EE922E /* OFAVFoundationVideoPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 49479B601A13BEA100EE922E /* OFAVFoundationVideoPlayerView.m */; };
 		49479B6B1A13C09A00EE922E /* OSXPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49479B691A13C09A00EE922E /* OSXPlayer.mm */; };
+		4957B0991A5971570068EF17 /* FFTR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4957B0971A5971570068EF17 /* FFTR.cpp */; };
 		4958BAB119F6DF9900DE1837 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4958BAB019F6DF9900DE1837 /* AVFoundation.framework */; };
 		4958BAB319F6DF9E00DE1837 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4958BAB219F6DF9E00DE1837 /* AVKit.framework */; };
 		4958BAB519F6DFAE00DE1837 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4958BAB419F6DFAE00DE1837 /* CoreFoundation.framework */; };
@@ -72,6 +73,8 @@
 		49479B691A13C09A00EE922E /* OSXPlayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OSXPlayer.mm; sourceTree = "<group>"; };
 		49479B6A1A13C09A00EE922E /* OSXPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSXPlayer.h; sourceTree = "<group>"; };
 		494EC0821A2BB099002B326D /* gpu_histogram_image.cl */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.opencl; name = gpu_histogram_image.cl; path = build/gpu_histogram_image.cl; sourceTree = "<group>"; };
+		4957B0971A5971570068EF17 /* FFTR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFTR.cpp; path = AFO/FFTR.cpp; sourceTree = "<group>"; };
+		4957B0981A5971570068EF17 /* FFTR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FFTR.h; path = AFO/FFTR.h; sourceTree = "<group>"; };
 		4958BAB019F6DF9900DE1837 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		4958BAB219F6DF9E00DE1837 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		4958BAB419F6DFAE00DE1837 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -343,6 +346,8 @@
 			children = (
 				49ED3C731A58597600CCCB68 /* AudioInput.cpp */,
 				49ED3C741A58597600CCCB68 /* AudioInput.h */,
+				4957B0971A5971570068EF17 /* FFTR.cpp */,
+				4957B0981A5971570068EF17 /* FFTR.h */,
 			);
 			name = AFO;
 			sourceTree = "<group>";
@@ -406,6 +411,7 @@
 			files = (
 				49B015CF19F91D2000112A25 /* VAO.cpp in Sources */,
 				49175CB119F4F943000FBC15 /* main.cpp in Sources */,
+				4957B0991A5971570068EF17 /* FFTR.cpp in Sources */,
 				49479B6B1A13C09A00EE922E /* OSXPlayer.mm in Sources */,
 				49B015CD19F91D2000112A25 /* Shader.cpp in Sources */,
 				49B015C619F91D2000112A25 /* ContextGLFW.cpp in Sources */,

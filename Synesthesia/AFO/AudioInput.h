@@ -11,6 +11,8 @@
 
 #include <cstdio>
 #include <RtAudio.h>
+#include <functional>
+#include "Tobago.h"
 
 class AudioInput {
 public:
@@ -19,9 +21,29 @@ public:
     static RtAudio::DeviceInfo getDeviceInfo(unsigned int i);
     static void printDevicesInfo();
 
-    AudioInput(int device=-1);
+    static int record(void *outputBuffer,
+                      void *inputBuffer,
+                      unsigned int nBufferFrames,
+                      double streamTime,
+                      RtAudioStreamStatus status,
+                      void *userData);
 
+    AudioInput(unsigned int device=-1,
+               unsigned int channel=0,
+               unsigned int bufferSize=1024);
+
+    void start(); //can throw exception.
+
+    void record(float* r, int nbf, double st);
+
+    void setCallback(std::function<void(float*, int, double)> f);
+
+    unsigned int device;
+    unsigned int channel;
+    unsigned int sampleRate;
+    unsigned int bufferSize;
     
+    std::function<void(float*, int, double)> f;
 };
 
 
