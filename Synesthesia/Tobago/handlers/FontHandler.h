@@ -5,6 +5,7 @@
 #include "../Objects/FBO.h"
 #include "../Objects/TBO.h"
 #include "../Objects/VBO.h"
+#include "../objects/VAO.h"
 #include "../Objects/shader.h"
 
 /*
@@ -30,18 +31,18 @@
 
 class FontHandler {
 	private :
-		oldTBO* Alphabet;
+		Texture* Alphabet;
 		Shader TexReader;
 		// Esto realmente son enteros, se usa float para aligerar el trabajo de conversion del programa.
 		unsigned StartingCharacter;
 		unsigned CHeight;
 		unsigned CWidth ;
 		unsigned CharsPerRow;
-		oldFBO* ret;
+		FBO* ret;
 
 	public :
 		FontHandler(char*); // Por defecto las tres variables valdran 32.
 		FontHandler(char*, unsigned, unsigned, unsigned,unsigned);
 		//FBO StringTexA(char*, unsigned); //Here is the fucking perleman.
-		oldTBO StringTex(char*, unsigned); //Here is the fucking perleman.
+		Texture StringTex(char*, unsigned); //Here is the fucking perleman.
 };

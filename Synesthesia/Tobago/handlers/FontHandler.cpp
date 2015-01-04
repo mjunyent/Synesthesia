@@ -24,9 +24,9 @@ const char *FontHandler_fragment= \
 FontHandler::FontHandler(char* FontName) {
 	StartingCharacter = 32;
 	CHeight = 32;
-	CWidth  = 32;	
+	CWidth  = 32;
 	CharsPerRow = 16;
-	Alphabet = new oldTBO(FontName,true);
+    Alphabet = new Texture(FontName,Texture::IMAGE_TYPE::PNG);
 	TexReader.loadFromString(GL_VERTEX_SHADER, FontHandler_vertex);
 	TexReader.loadFromString(GL_FRAGMENT_SHADER, FontHandler_fragment);
 	TexReader.link();
@@ -38,20 +38,24 @@ FontHandler::FontHandler(char* FontName, unsigned StartingChar, unsigned CellHei
 	CHeight = CellHeight;
 	CWidth  = CellWidth;
 	CharsPerRow = Square / CWidth ;
-	Alphabet = new oldTBO(FontName,true);
+    Alphabet = new Texture(FontName,Texture::IMAGE_TYPE::PNG);
 	TexReader.loadFromString(GL_VERTEX_SHADER, FontHandler_vertex);
 	TexReader.loadFromString(GL_FRAGMENT_SHADER, FontHandler_fragment);
 	TexReader.link();
 	TexReader.addUniform("theTex");
 }
 
-oldTBO FontHandler::StringTex(char* Message, unsigned len){
-	oldTBO rett;
-	vector<oldTBO*> tmpsent;
-	tmpsent.push_back(&rett);
-	bool tmpsent_bool[] = {true};
-	ret = new oldFBO(CWidth * len, CHeight, tmpsent, NULL, tmpsent_bool);
-	vector< GLfloat > QuadsCoord;
+Texture FontHandler::StringTex(char* Message, unsigned len){
+    Texture rett(GL_TEXTURE_2D);
+    rett.setData(CWidth*len, CHeight);
+
+    ret = new FBO();
+    ret->bind();
+    ret->attachTexture(&rett, FBO::FBOAttachment::COLOR0);
+    ret->setDrawBuffers();
+    ret->unbind();
+
+    vector< GLfloat > QuadsCoord;
 	vector< GLfloat > QuadsUV	;
 	float x		 = -1.00f;
 	float offset = 2/float(len);
@@ -102,18 +106,23 @@ oldTBO FontHandler::StringTex(char* Message, unsigned len){
 		QuadsUV.push_back(1.0f - uv_y);
 	}
 
-	oldVBO QuadCoord(QuadsCoord,0);
-	oldVBO QuadUV   (QuadsUV	,1);
+    VAO tmpVAO(GL_TRIANGLES);
+
+    VBO QuadCoord(QuadsCoord);
+    VBO QuadUV(QuadsUV);
+
+    tmpVAO.addAttribute(0, 2, &QuadCoord);
+    tmpVAO.addAttribute(1, 2, &QuadUV);
+
+    ret->use(true);
 	TexReader.use();
-	ret->bind();
-	Alphabet->bind(0);
-	TexReader("theTex", 0);
-	QuadCoord.enable(2);
-	QuadUV.enable(2);
-	QuadCoord.draw( GL_TRIANGLES );
-	QuadCoord.disable();
-	QuadUV.disable();
-	ret->unbind();
-	ret->erase();
-	return rett;
+    
+    Alphabet->bindToGLSL(0);
+    TexReader("theTex", 0);
+
+    tmpVAO.draw();
+
+    ret->unuse();
+
+    return rett;
 }
