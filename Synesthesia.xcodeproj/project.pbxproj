@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		49175CB119F4F943000FBC15 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49175CB019F4F943000FBC15 /* main.cpp */; };
+		4929F1531A5AEA270066638F /* BeatDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4929F1511A5AEA270066638F /* BeatDetector.cpp */; };
 		4935546A1A27460400F435AA /* AssetLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 493554681A27460400F435AA /* AssetLibrary.cpp */; };
 		494138451A346C8900167B5B /* libboost_filesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 494138441A346C8900167B5B /* libboost_filesystem.a */; };
 		494138471A346CD000167B5B /* libboost_system.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 494138461A346CD000167B5B /* libboost_system.a */; };
@@ -60,6 +61,8 @@
 /* Begin PBXFileReference section */
 		49175CAD19F4F943000FBC15 /* Synesthesia */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Synesthesia; sourceTree = BUILT_PRODUCTS_DIR; };
 		49175CB019F4F943000FBC15 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		4929F1511A5AEA270066638F /* BeatDetector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BeatDetector.cpp; path = AFO/BeatDetector.cpp; sourceTree = "<group>"; };
+		4929F1521A5AEA270066638F /* BeatDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatDetector.h; path = AFO/BeatDetector.h; sourceTree = "<group>"; };
 		493554681A27460400F435AA /* AssetLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AssetLibrary.cpp; sourceTree = "<group>"; };
 		493554691A27460400F435AA /* AssetLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssetLibrary.h; sourceTree = "<group>"; };
 		494138441A346C8900167B5B /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = libs/libboost_filesystem.a; sourceTree = "<group>"; };
@@ -343,6 +346,8 @@
 			children = (
 				49ED3C731A58597600CCCB68 /* AudioInput.cpp */,
 				49ED3C741A58597600CCCB68 /* AudioInput.h */,
+				4929F1511A5AEA270066638F /* BeatDetector.cpp */,
+				4929F1521A5AEA270066638F /* BeatDetector.h */,
 			);
 			name = AFO;
 			sourceTree = "<group>";
@@ -413,6 +418,7 @@
 				49B015C919F91D2000112A25 /* FBO.cpp in Sources */,
 				49B015CA19F91D2000112A25 /* jpgd.cpp in Sources */,
 				49B015D419F938BF00112A25 /* SoundHandler.cpp in Sources */,
+				4929F1531A5AEA270066638F /* BeatDetector.cpp in Sources */,
 				49F029431A176C5100B355BA /* VideoAsset.cpp in Sources */,
 				49B015CB19F91D2000112A25 /* jpge.cpp in Sources */,
 				49BEABC71A44EC5F0002BF26 /* OSXFrameGetter.mm in Sources */,

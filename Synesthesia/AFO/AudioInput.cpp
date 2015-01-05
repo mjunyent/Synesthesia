@@ -77,7 +77,15 @@ AudioInput::AudioInput(unsigned int device, unsigned int channel, unsigned int b
     parameters.nChannels = 1;
     parameters.firstChannel = channel;
 
-    sampleRate = 44100; //TODO CHECK IF SR is not available
+    bool found = false;
+    for(unsigned int j=0; j<getDeviceInfo(parameters.deviceId).sampleRates.size(); j++) {
+        if(getDeviceInfo(parameters.deviceId	).sampleRates[j] == 44100) found = true;
+    }
+    if(!found) {
+        std::cerr << "No suitable sampling rate found for audio device!";
+        throw 0;
+    }
+    sampleRate = 44100;
 
     adc.openStream(NULL, &parameters, RTAUDIO_FLOAT32, sampleRate, &bufferSize, &AudioInput::record, this);
 }
