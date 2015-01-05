@@ -51,17 +51,15 @@ BeatDetector::BeatDetector(AudioInput* adc) : adc(adc) {
         
         //Fill bands
         int k = 0;
-        for(int i=0; i<numBands && k<n/2; i++)  {
+        for(int i=0; i<numBands; i++)  {
             fftBands[currentReg][i] = 0.0f;
-            for(int j=0; j<pow(2,i+1); j++) {
-                if(k > n/2) break;
+            for(int j=0; j<numElementsInBand; j++) {
                 fftBands[currentReg][i] += rfft[k];
                 k++;
             }
-            fftBands[currentReg][i] *= pow(2,i+1)/(n/2);
+            fftBands[currentReg][i] *= numElementsInBand/float(n/2);
         }
         
-        std::cout << t << std::endl;
     });
 }
 
@@ -81,11 +79,13 @@ void BeatDetector::initDebug() {
     waveShad.loadFromString(GL_FRAGMENT_SHADER,
                             "#version 330 core\
                             layout(location = 0) out vec4 color;\
+                            uniform float bb;\
                             void main(){\
-                            color = vec4(1.0, 0.0, 0.0, 1.0);\
+                            color = vec4(1.0, bb, bb, 1.0);\
                             }");
     waveShad.link();
     waveShad.addUniform("npoints");
+    waveShad.addUniform("bb");
     
     waveVAO = new VAO(GL_LINE_STRIP);
     waveVBO = new VBO(wave, adc->bufferSize);
@@ -146,11 +146,12 @@ void BeatDetector::initDebug() {
     fftBandsVAO->addAttribute(0, 1, fftBandsVBO);
 }
 
-void BeatDetector::renderWAVE() {
+void BeatDetector::renderWAVE(float v) {
     waveVBO->subdata(wave, 0, adc->bufferSize*sizeof(float));
 
     waveShad.use();
     waveShad("npoints", (int)adc->bufferSize);
+    waveShad("bb", v);
     waveVAO->draw();
 }
 
@@ -163,9 +164,17 @@ void BeatDetector::renderFFT(float rmax) {
     fftVAO->draw();
 }
 
-void BeatDetector::renderBands(float rmax) {
+bool BeatDetector::renderBands(float rmax) {
+    bool ret = false;
     if(currentReg != -1) {
         fftBandsVBO->subdata(&fftBands[currentReg][0], 0, numBands*sizeof(float));
+        for(int i=1; i<numBands; i++) {
+            if(fftBands[currentReg][i] > 2.0*fftBandMeans[i]) {
+                std::cout << "Beat at: " << i << std::endl;
+                ret = true;
+            }
+        }
+        std::cout << std::endl;
     }
     
     fftBandsShad.use();
@@ -175,13 +184,25 @@ void BeatDetector::renderBands(float rmax) {
     fftBandsVAO->draw();
     
     
-    
     fftBandsVBO->subdata(&fftBandMeans[0], 0, numBands*sizeof(float));
     fftBandsShad.use();
     fftBandsShad("npoints", numBands);
     fftBandsShad("rmax", rmax);
     fftBandsShad("cl", new glm::vec3(1.0,1.0,1.0));
     fftBandsVAO->draw();
+
+    for(int i=0; i<numBands; i++) {
+        fftBandMeans[i] *= 2.0;
+    }
+
+    fftBandsVBO->subdata(&fftBandMeans[0], 0, numBands*sizeof(float));
+    fftBandsShad.use();
+    fftBandsShad("npoints", numBands);
+    fftBandsShad("rmax", rmax);
+    fftBandsShad("cl", new glm::vec3(0.0,1.0,1.0));
+    fftBandsVAO->draw();
+
+    return ret;
 }
 #endif
 

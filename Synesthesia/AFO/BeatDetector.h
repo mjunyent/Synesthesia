@@ -34,9 +34,9 @@ public:
 
 #ifdef BEAT_DEBUG
     float *wave;
-    void renderWAVE();
+    void renderWAVE(float v);
     void renderFFT(float rmax = 10.0f);
-    void renderBands(float rmax = 2.0f);
+    bool renderBands(float rmax = 2.0f);
     
     Shader waveShad;
     VAO *waveVAO;

@@ -31,7 +31,7 @@ int main(int argc, const char * argv[]) {
     
     AudioInput::printDevicesInfo();
     
-    AudioInput a(6);
+    AudioInput a;
     BeatDetector beat(&a);
 
     a.start();
@@ -41,9 +41,10 @@ int main(int argc, const char * argv[]) {
     while(Tobago.enabled(0)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        beat.renderWAVE();
+        bool k = beat.renderBands();
+        if(k) beat.renderWAVE(1.0);
+        else beat.renderWAVE(0.0);
         beat.renderFFT();
-        beat.renderBands();
         
         Tobago.swap(0);
 
