@@ -36,7 +36,7 @@ public:
     float *wave;
     void renderWAVE(float v);
     void renderFFT(float rmax = 10.0f);
-    bool renderBands(float rmax = 2.0f);
+    bool renderBands(float rmax = 1.0f);
     
     Shader waveShad;
     VAO *waveVAO;

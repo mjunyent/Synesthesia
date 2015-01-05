@@ -36,6 +36,7 @@ int main(int argc, const char * argv[]) {
 
     a.start();
 
+    glDisable(GL_DEPTH_TEST);
     
 
     while(Tobago.enabled(0)) {
