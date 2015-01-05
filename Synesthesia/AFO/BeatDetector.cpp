@@ -51,14 +51,17 @@ BeatDetector::BeatDetector(AudioInput* adc) : adc(adc) {
         
         //Fill bands
         int k = 0;
-        for(int i=0; i<numBands; i++)  {
+        for(int i=0; i<numBands && k<n/2; i++)  {
             fftBands[currentReg][i] = 0.0f;
-            for(int j=0; j<numElementsInBand; j++) {
+            for(int j=0; j<pow(2,i+1); j++) {
+                if(k > n/2) break;
                 fftBands[currentReg][i] += rfft[k];
                 k++;
             }
-            fftBands[currentReg][i] *= numElementsInBand/512.0;
+            fftBands[currentReg][i] *= pow(2,i+1)/(n/2);
         }
+        
+        std::cout << t << std::endl;
     });
 }
 
@@ -163,12 +166,7 @@ void BeatDetector::renderFFT(float rmax) {
 void BeatDetector::renderBands(float rmax) {
     if(currentReg != -1) {
         fftBandsVBO->subdata(&fftBands[currentReg][0], 0, numBands*sizeof(float));
-    
-    for(int i=0; i<numBands; i++) {
-        std::cout << fftBands[currentReg][i] << " ";
     }
-    }
-    std::cout << std::endl;
     
     fftBandsShad.use();
     fftBandsShad("npoints", numBands);
@@ -184,7 +182,6 @@ void BeatDetector::renderBands(float rmax) {
     fftBandsShad("rmax", rmax);
     fftBandsShad("cl", new glm::vec3(1.0,1.0,1.0));
     fftBandsVAO->draw();
-    
 }
 #endif
 

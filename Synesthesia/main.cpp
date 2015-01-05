@@ -31,7 +31,7 @@ int main(int argc, const char * argv[]) {
     
     AudioInput::printDevicesInfo();
     
-    AudioInput a;
+    AudioInput a(6);
     BeatDetector beat(&a);
 
     a.start();

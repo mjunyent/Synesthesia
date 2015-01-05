@@ -73,6 +73,8 @@ AudioInput::AudioInput(unsigned int device, unsigned int channel, unsigned int b
         parameters.deviceId = adc.getDefaultInputDevice();
     else
         parameters.deviceId = device;
+    
+    std::cerr << "Device selected: " <<  getDeviceInfo(parameters.deviceId).name << std::endl;
 
     parameters.nChannels = 1;
     parameters.firstChannel = channel;
@@ -82,10 +84,12 @@ AudioInput::AudioInput(unsigned int device, unsigned int channel, unsigned int b
         if(getDeviceInfo(parameters.deviceId	).sampleRates[j] == 44100) found = true;
     }
     if(!found) {
-        std::cerr << "No suitable sampling rate found for audio device!";
-        throw 0;
-    }
-    sampleRate = 44100;
+        for(unsigned int j=0; j<getDeviceInfo(parameters.deviceId).sampleRates.size(); j++) {
+            if(getDeviceInfo(parameters.deviceId	).sampleRates[j] == 48000) found = true;
+        }
+        if(!found) std::cerr << "No suitable sampling rate found for audio device!";
+        else sampleRate = 48000;
+    } else sampleRate = 44100;
 
     adc.openStream(NULL, &parameters, RTAUDIO_FLOAT32, sampleRate, &bufferSize, &AudioInput::record, this);
 }
@@ -95,8 +99,10 @@ void AudioInput::start() {
 }
 
 int AudioInput::record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData) {
-
-    if(status) (Tobago.log)->write(Log::WARNING) << "Stream overflow detected!";
+    if(status) {
+        (Tobago.log)->write(Log::WARNING) << "Stream overflow detected!";
+        std::cerr << "Stream overflow detected" << std::endl;
+    }
     else {
         AudioInput* ai = (AudioInput*) userData;
         float* r = (float*) inputBuffer;
