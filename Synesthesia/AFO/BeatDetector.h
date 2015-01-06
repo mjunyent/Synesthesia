@@ -18,7 +18,7 @@
 
 class BeatDetector {
 public:
-    BeatDetector(AudioInput* adc);
+    BeatDetector(AudioInput* adc, int octaveDivisions=0);
     
     AudioInput* adc;
     ffft::FFTReal<float>* fft_object;
@@ -37,7 +37,7 @@ public:
     float *wave;
     void renderWAVE(float v);
     void renderFFT(float rmax = 10.0f);
-    bool renderBands(float rmax = 1.0f);
+    bool renderBands(float rmax = 50.0f);
     
     Shader waveShad;
     VAO *waveVAO;

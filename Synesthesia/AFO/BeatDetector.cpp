@@ -8,14 +8,13 @@
 
 #include "BeatDetector.h"
 
-BeatDetector::BeatDetector(AudioInput* adc) : adc(adc) {
+BeatDetector::BeatDetector(AudioInput* adc, int octaveDivisions) : adc(adc) {
     fft_object = new ffft::FFTReal<float>(adc->bufferSize);
 
-    
     fft = (float*)malloc(sizeof(float)*adc->bufferSize);
     rfft = (float*)malloc(sizeof(float)*adc->bufferSize/2);
 
-    numBands = 64;
+    numBands = 64; // std::log2(adc->bufferSize/2)*octaveDivisions - octaveDivisions+1;
     numElementsInBand = adc->bufferSize/2/numBands;
     numRegs = 40; //43
     currentReg = -1;
@@ -33,7 +32,7 @@ BeatDetector::BeatDetector(AudioInput* adc) : adc(adc) {
         memcpy(wave, b, sizeof(float)*n);
 #endif
         fft_object->do_fft(fft, b);
-        rfft[0] = fft[0];
+        rfft[0] = std::fabs(fft[0]);
         for(int i=1; i<n/2; i++)
             rfft[i] = sqrt(fft[i]*fft[i] + fft[i+n/2]*fft[i+n/2]);
 
@@ -49,8 +48,8 @@ BeatDetector::BeatDetector(AudioInput* adc) : adc(adc) {
         currentReg++;
         currentReg %= numRegs;
         
-        //Fill bands
-        int k = 0;
+        //Fill bands (linear)
+/*        int k = 0;
         for(int i=0; i<numBands; i++)  {
             fftBands[currentReg][i] = 0.0f;
             for(int j=0; j<numElementsInBand; j++) {
@@ -58,6 +57,16 @@ BeatDetector::BeatDetector(AudioInput* adc) : adc(adc) {
                 k++;
             }
             fftBands[currentReg][i] *= numElementsInBand/float(n/2);
+        }*/
+
+        int k = 0;
+        for(int i=0; i<std::log2(n/2); i++) {
+            fftBands[currentReg][i] = 0.0f;
+            for(int j=0; j<std::pow(2.0, i); j++) {
+                fftBands[currentReg][i] += rfft[k];
+                k++;
+            }
+            fftBands[currentReg][i] /= pow(2.0, i);
         }
         
     });
@@ -185,23 +194,23 @@ bool BeatDetector::renderBands(float rmax) {
 
     fftBandsVBO->subdata(&fftBandMeans[0], 0, numBands*sizeof(float));
     fftBandsShad.use();
-    fftBandsShad("npoints", numBands);
+    fftBandsShad("npoints", int(std::log2(adc->bufferSize/2)));
     fftBandsShad("rmax", rmax/2.0f);
     fftBandsShad("cl", new glm::vec3(1.0,1.0,1.0));
     fftBandsVAO->draw();
 
     if(currentReg != -1) {
         fftBandsVBO->subdata(&fftBands[currentReg][0], 0, numBands*sizeof(float));
-        for(int i=1; i<16; i++) {
+        for(int i=0; i<std::log2(adc->bufferSize/2)-1; i++) {
             if(fftBands[currentReg][i] > 2.0*fftBandMeans[i]) {
                 std::cout << "Beat at: " << i << std::endl;
                 ret = true;
             }
         }
-        std::cout << std::endl;
+        if(ret == true) std::cout << std::endl;
     }
     fftBandsShad.use();
-    fftBandsShad("npoints", numBands);
+    fftBandsShad("npoints", int(std::log2(adc->bufferSize/2)));
     fftBandsShad("rmax", rmax);
     fftBandsShad("cl", new glm::vec3(0.0,1.0,0.0));
     fftBandsVAO->draw();

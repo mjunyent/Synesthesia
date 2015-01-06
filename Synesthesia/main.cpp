@@ -24,12 +24,23 @@ int main(int argc, const char * argv[]) {
     TobagoInitGLFW(3, 3);
 
     ContextGLFW context = ContextGLFW(1280, 720, "Synesthesia", NULL, NULL);
-    Tobago.init(&context);
+    ContextGLFW visualizer = ContextGLFW(600, 600, "Visualizer", NULL, &context);
+
+    std::vector<Context*> contexts;
+    contexts.push_back(&context);
+    contexts.push_back(&visualizer);
+
+    Tobago.init(contexts);
     Tobago.use(0);
     TOBAGO::initOCLwithCurrentOGLcontext();
     
+    Tobago.use(1);
     
-    AudioInput::printDevicesInfo();
+    
+    
+    Tobago.use(0);
+    
+//    AudioInput::printDevicesInfo();
     
     AudioInput a; //(-1, 0, 2048);
     BeatDetector beat(&a);
