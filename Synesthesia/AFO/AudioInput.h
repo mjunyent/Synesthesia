@@ -14,6 +14,8 @@
 #include <functional>
 #include "Tobago.h"
 
+#define REWIRE_OUTPUT 1
+
 class AudioInput {
 public:
     static RtAudio adc;

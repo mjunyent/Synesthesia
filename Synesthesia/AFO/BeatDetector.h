@@ -15,6 +15,7 @@
 
 #define BEAT_DEBUG
 
+
 class BeatDetector {
 public:
     BeatDetector(AudioInput* adc);

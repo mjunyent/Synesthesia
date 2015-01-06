@@ -17,7 +17,7 @@ BeatDetector::BeatDetector(AudioInput* adc) : adc(adc) {
 
     numBands = 64;
     numElementsInBand = adc->bufferSize/2/numBands;
-    numRegs = 43;
+    numRegs = 40; //43
     currentReg = -1;
 
     fftBands = std::vector< std::vector<float> >(numRegs, std::vector<float>(numBands, 0.0f));
@@ -192,7 +192,7 @@ bool BeatDetector::renderBands(float rmax) {
 
     if(currentReg != -1) {
         fftBandsVBO->subdata(&fftBands[currentReg][0], 0, numBands*sizeof(float));
-        for(int i=1; i<10; i++) {
+        for(int i=1; i<16; i++) {
             if(fftBands[currentReg][i] > 2.0*fftBandMeans[i]) {
                 std::cout << "Beat at: " << i << std::endl;
                 ret = true;
