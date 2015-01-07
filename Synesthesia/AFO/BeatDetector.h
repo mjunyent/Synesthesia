@@ -18,20 +18,25 @@
 
 class BeatDetector {
 public:
-    BeatDetector(AudioInput* adc, int octaveDivisions=0);
+    BeatDetector(AudioInput* adc, int desiredBandsPerOctave=4); //barsPerOctave should be a power of 2.
     
     AudioInput* adc;
     ffft::FFTReal<float>* fft_object;
+    
+    const std::vector<bool> getBeats();
 
     float *rfft;
     float *fft;
     
+    int numOctaves;
+    std::vector<int> bandsPerOctave;
     int numBands; //we group the fft in numBands bands
-    int numElementsInBand;
     int currentReg;
     int numRegs; //we save numRegs values of each band
     std::vector< std::vector<float> > fftBands;
     std::vector<float> fftBandMeans;
+    std::vector<bool> beats;
+    std::vector<float> fBeats;
 
 #ifdef BEAT_DEBUG
     float *wave;
