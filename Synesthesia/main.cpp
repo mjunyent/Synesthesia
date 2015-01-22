@@ -17,6 +17,11 @@
 #include <unistd.h>
 
 int main(int argc, const char * argv[]) {
+    if(argc < 2) {
+        std::cout << "To use run: Synesthesia path/to/your/video/file" << std::endl;
+        exit(EXIT_SUCCESS);
+    }
+
     TobagoInitGLFW(3, 3);
 
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
@@ -73,8 +78,24 @@ int main(int argc, const char * argv[]) {
     player.load(path);
 
     Shader s;
-    s.loadFromFile(GL_VERTEX_SHADER, "simple.vert");
-    s.loadFromFile(GL_FRAGMENT_SHADER, "simple2.frag");
+    s.loadFromString(GL_VERTEX_SHADER, "#version 330 core\
+                     layout(location = 0) in vec3 vertexPosition;\
+                     out vec2 UV;\
+                     void main(){\
+                         gl_Position =  vec4(vertexPosition,1);\
+                         UV = vec2(1+vertexPosition.x, 1-vertexPosition.y)/2.0;\
+                     }");
+    s.loadFromString(GL_FRAGMENT_SHADER, "#version 330 core\
+                     in vec2 UV;\
+                     layout(location = 0) out vec4 color;\
+                     uniform sampler2DRect tex;\
+                     uniform vec3 mean;\
+                     uniform vec2 size;\
+                     void main(){\
+                         if(UV.x*size.x < 20) color.xyz = mean;\
+                         else color = texture(tex, UV*size-vec2(20,0));\
+                        color.a = 1.0;\
+                     }");
     s.link();
     s.addUniform("tex");
     s.addUniform("mean");
@@ -97,41 +118,99 @@ int main(int argc, const char * argv[]) {
 
     int shotId;
     do {
-        std::cout << "Select the shot to play (from 0 to " << shotdetector.boundaries.size() << ") or -1 to exit: ";
+        std::cout << "Select the shot to play (from 0 to " << shotdetector.boundaries.size() << ") or -1 for the full video or -2 to exit: ";
         std::cin >> shotId;
-        if(shotId == -1) break;
+        if(shotId == -2) break;
+        
+        if(shotId == -1) {
+            glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
+            ContextGLFW newWindow(width+20, height, "All Video", NULL, &context);
+            newWindow.init();
+            newWindow.use();
+            
+            player.setFrame(0);
+            player.play();
 
-        glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
-        ContextGLFW newWindow(width+20, height, ("Shot n"+std::to_string(shotId)).c_str(), NULL, &context);
-        newWindow.init();
-        newWindow.use();
+            int currentBreak = 0;
+            double lastTime = -1;
+            while(newWindow.enabled && player.getFrameNum() != player.getTotalNumFrames()) {
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        player.setFrame(shotId==0?0:shotdetector.boundaries[shotId-1]);
-        player.play();
+                if(player.getFrameNum() == shotdetector.boundaries[currentBreak]) {
+                    if(lastTime == -1) {
+                        lastTime = glfwGetTime();
+                        player.pause();
+                        glClearColor(1.0, 1.0, 1.0, 1.0);
+                    } else if(glfwGetTime()-lastTime > 0.07) {
+                        currentBreak++;
+                        if(currentBreak >= shotdetector.boundaries.size()) currentBreak = 0;
+                        lastTime = -1;
+                        player.play();
+                        glClearColor(0.0, 0.0, 0.0, 1.0);
+                    }
 
-        while(newWindow.enabled && player.getFrameNum() != shotdetector.boundaries[shotId]) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                    newWindow.swap();
+                    if(glfwGetKey(newWindow.window, GLFW_KEY_ESCAPE) && newWindow.enabled) newWindow.stop();
+                    continue;
+                } else {
+                    player.update();
+                }
 
-            if(player.getTexture() != NULL) { player.getTexture()->bindToGLSL(0); }
+                if(player.getTexture() != NULL) { player.getTexture()->bindToGLSL(0); }
 
-            player.update();
+                s.use();
+                s("tex", 0);
+                glm::vec2 size(width+20, height);
+                glm::vec3 mean(histograms.rgbMeans[player.getFrameNum()].r,
+                               histograms.rgbMeans[player.getFrameNum()].g,
+                               histograms.rgbMeans[player.getFrameNum()].b);
+                s("size", &size);
+                if(player.getFrameNum() >= 0 && player.getFrameNum() <= histograms.rgbMeans.size())
+                    s("mean", &mean);
+                vao.draw();
 
-            s.use();
-            s("tex", 0);
-            s("size", new glm::vec2(width+20, height));
-            if(player.getFrameNum() >= 0 && player.getFrameNum() <= histograms.rgbMeans.size())
-                s("mean", new glm::vec3(histograms.rgbMeans[player.getFrameNum()].r,
-                                        histograms.rgbMeans[player.getFrameNum()].g,
-                                        histograms.rgbMeans[player.getFrameNum()].b));
-            vao.draw();
+                newWindow.swap();
 
-            newWindow.swap();
-
-            if(glfwGetKey(newWindow.window, GLFW_KEY_ESCAPE) && newWindow.enabled) newWindow.stop();
+                if(glfwGetKey(newWindow.window, GLFW_KEY_ESCAPE) && newWindow.enabled) newWindow.stop();
+            }
+            player.stop();
+            newWindow.stop();
         }
-        player.stop();
-        newWindow.stop();
-    } while (shotId != -1);
+        else {
+            glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
+            ContextGLFW newWindow(width+20, height, ("Shot n"+std::to_string(shotId)).c_str(), NULL, &context);
+            newWindow.init();
+            newWindow.use();
+
+            player.setFrame(shotId==0?0:shotdetector.boundaries[shotId-1]);
+            player.play();
+
+            while(newWindow.enabled && player.getFrameNum() != shotdetector.boundaries[shotId]) {
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+                if(player.getTexture() != NULL) { player.getTexture()->bindToGLSL(0); }
+
+                player.update();
+
+                s.use();
+                s("tex", 0);
+                glm::vec2 size(width+20, height);
+                glm::vec3 mean(histograms.rgbMeans[player.getFrameNum()].r,
+                               histograms.rgbMeans[player.getFrameNum()].g,
+                               histograms.rgbMeans[player.getFrameNum()].b);
+                s("size", &size);
+                if(player.getFrameNum() >= 0 && player.getFrameNum() <= histograms.rgbMeans.size())
+                    s("mean", &mean);
+                vao.draw();
+
+                newWindow.swap();
+
+                if(glfwGetKey(newWindow.window, GLFW_KEY_ESCAPE) && newWindow.enabled) newWindow.stop();
+            }
+            player.stop();
+            newWindow.stop();
+        }
+    } while (shotId != -2);
 
     Tobago.log->flush();
 
