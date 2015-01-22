@@ -8,6 +8,6 @@ out vec2 UV;
 
 void main(){
 	gl_Position =  vec4(vertexPosition,1);
-	UV = (vertexPosition.xy+vec2(1,1))/2.0;
+	UV = vec2(1+vertexPosition.x, 1-vertexPosition.y)/2.0;
 }
 

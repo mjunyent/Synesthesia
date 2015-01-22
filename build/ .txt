@@ -1,7 +1,0 @@
-A2058 	 Error Log 	 logTobago.txt
-
-0.366579	 INFO: Connecting to Intel Iris.
-0.420074	 WARNING: Exception loading asset "/Users/marc/Desktop/video/_DSC2356": Info file doesn't exist - The asset has been ignored.
-0.420175	 WARNING: Exception loading asset "/Users/marc/Desktop/video/adsf": Info file doesn't exist - The asset has been ignored.
-0.420193	 WARNING: Exception loading asset "/Users/marc/Desktop/video/asdf": Info file doesn't exist - The asset has been ignored.
-0.492026	 ERROR: Error loading video /Users/marc/Desktop/video/_DSC23561 : Could not load video /Users/marc/Desktop/video/_DSC23561/_DSC2356.jpg

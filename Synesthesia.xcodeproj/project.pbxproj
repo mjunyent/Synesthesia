@@ -192,13 +192,13 @@
 		49479B5B1A13BEA100EE922E /* Player */ = {
 			isa = PBXGroup;
 			children = (
+				49479B5C1A13BEA100EE922E /* OSX */,
 				49479B671A13BEEC00EE922E /* Player.h */,
 				49479B6A1A13C09A00EE922E /* OSXPlayer.h */,
 				49479B691A13C09A00EE922E /* OSXPlayer.mm */,
-				49479B5C1A13BEA100EE922E /* OSX */,
-				49BEABC51A44EC5E0002BF26 /* OSXFrameGetter.mm */,
-				49BEABC61A44EC5E0002BF26 /* OSXFrameGetter.h */,
 				49B74F871A45943300A51AE0 /* FrameGetter.h */,
+				49BEABC61A44EC5E0002BF26 /* OSXFrameGetter.h */,
+				49BEABC51A44EC5E0002BF26 /* OSXFrameGetter.mm */,
 			);
 			path = Player;
 			sourceTree = "<group>";
