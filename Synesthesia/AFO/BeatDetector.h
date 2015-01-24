@@ -13,6 +13,12 @@
 #include "AudioInput.h"
 #include "ffft/FFTReal.h"
 
+#include <set>
+#include <list>
+#include <algorithm>
+#include <utility>
+#include <iterator>
+
 #define BEAT_DEBUG
 
 
@@ -27,6 +33,9 @@ public:
 
     float *rfft;
     float *fft;
+
+    float *medrfft;
+    int medSize;
     
     int numOctaves;
     std::vector<int> bandsPerOctave;

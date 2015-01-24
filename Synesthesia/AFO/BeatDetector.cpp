@@ -14,6 +14,9 @@ BeatDetector::BeatDetector(AudioInput* adc, int desiredBandsPerOctave) : adc(adc
     fft = (float*)malloc(sizeof(float)*adc->bufferSize);
     rfft = (float*)malloc(sizeof(float)*adc->bufferSize/2);
 
+    medrfft = (float*)malloc(sizeof(float)*adc->bufferSize/2);
+    medSize = 11;
+
     numOctaves = std::log2(adc->bufferSize/2);
     bandsPerOctave = std::vector<int>(numOctaves);
     int numSamples = 1;
@@ -40,19 +43,46 @@ BeatDetector::BeatDetector(AudioInput* adc, int desiredBandsPerOctave) : adc(adc
     fftBands = std::vector< std::vector<float> >(numRegs, std::vector<float>(numBands, 0.0f));
     
     fftBandMeans = std::vector<float>(numBands, 0.0f);
-    
-#ifdef BEAT_DEBUG
-    initDebug();
-#endif
+
+    #ifdef BEAT_DEBUG
+        initDebug();
+    #endif
 
     adc->setCallback([&](float* b, int n, double t) {
-#ifdef BEAT_DEBUG
-        memcpy(wave, b, sizeof(float)*n);
-#endif
+        #ifdef BEAT_DEBUG
+            memcpy(wave, b, sizeof(float)*n);
+        #endif
+
         fft_object->do_fft(fft, b);
         rfft[0] = std::fabs(fft[0]);
         for(int i=1; i<n/2; i++)
             rfft[i] = sqrt(fft[i]*fft[i] + fft[i+n/2]*fft[i+n/2]);
+
+        
+        //Do median filtering!
+        std::vector<float> median(medSize, 0.0);
+
+        for(int i=0; i<n/2; i++) {
+            std::vector<float> median;
+            for(int j=std::max(0, i-medSize/2); j<=std::min(n/2-1, i+medSize/2); j++) {
+                median.push_back(rfft[j]);
+            }
+            sort(median.begin(), median.end());
+
+            medrfft[i] = median[median.size()/2];
+        }
+ 
+//        for(int i=0; i<n/2; i++) rfft[i] = pow(medrfft[i], 2.0)/( pow(rfft[i], 2.0) + pow(medrfft[i], 2.0) );
+        for(int i=0; i<n/2; i++) rfft[i] = medrfft[i];
+
+/*        for(int i=0; i<20; i++) std::cout << rfft[i] << " ";
+        std::cout << std::endl;
+        for(int i=0; i<20; i++) std::cout << medrfft[i] << " ";
+        std::cout << std::endl;
+        std::cout << std::endl;*/
+
+
+
 
         //Calculate means
         for(int i=0; i<numBands; i++) {
@@ -111,9 +141,9 @@ BeatDetector::BeatDetector(AudioInput* adc, int desiredBandsPerOctave) : adc(adc
         }
         
         for(int i=0; i<numBands; i++) {
-            fBeats[i] = std::max(0.0, fBeats[i]-4.0*n/44100.0);
-            if(fftBands[currentReg][i] < 0.3) beats[i] = false;
-            if(fftBands[currentReg][i] > 2.5*fftBandMeans[i]) fBeats[i] = 1.2;
+            fBeats[i] = std::max(0.0, fBeats[i]-6.0*n/44100.0);
+            if(fftBands[currentReg][i] < 0.2) beats[i] = false;
+            if(fftBands[currentReg][i] > 2.0*fftBandMeans[i]) fBeats[i] = 1.1;
         }
     });
 }
@@ -152,16 +182,13 @@ void BeatDetector::initDebug() {
                            layout(location = 0) in float vertexPosition;\
                            uniform int npoints;\
                            uniform float rmax;\
-                           out vec3 cl;\
                            void main(){\
                            gl_Position =  vec4((2.0*gl_VertexID)/float(npoints-1.0) - 1.0, vertexPosition/rmax-1.0, 0, 1);\
-                           if(gl_VertexID == 10 || gl_VertexID == 20 || gl_VertexID == 41) cl = vec3(1.0,1.0,1.0);\
-                           else cl = vec3(0.0,0.0,1.0);\
                            }");
     fftShad.loadFromString(GL_FRAGMENT_SHADER,
                            "#version 330 core\
-                           in vec3 cl;\
                            layout(location = 0) out vec4 color;\
+                           uniform vec3 cl;\
                            void main(){\
                            color = vec4(cl, 1.0);\
                            }");
@@ -169,7 +196,7 @@ void BeatDetector::initDebug() {
     fftShad.link();
     fftShad.addUniform("npoints");
     fftShad.addUniform("rmax");
-    
+    fftShad.addUniform("cl");
     
     fftVAO = new VAO(GL_LINE_STRIP);
     fftVBO = new VBO(rfft, adc->bufferSize/2);
@@ -232,6 +259,15 @@ void BeatDetector::renderFFT(float rmax) {
     fftShad.use();
     fftShad("npoints", (int)adc->bufferSize/2);
     fftShad("rmax", rmax);
+    fftShad("cl", new glm::vec3(0.0,0.0,1.0));
+    fftVAO->draw();
+    
+    fftVBO->subdata(medrfft, 0, adc->bufferSize*sizeof(float)/2);
+
+    fftShad.use();
+    fftShad("npoints", (int)adc->bufferSize/2);
+    fftShad("rmax", rmax);
+    fftShad("cl", new glm::vec3(1.0,0.0,0.0));
     fftVAO->draw();
 }
 

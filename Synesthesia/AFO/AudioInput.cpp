@@ -24,7 +24,7 @@ void AudioInput::printDevicesInfo() {
     for(int i=0; i<getNumDevices(); i++) {
         info = getDeviceInfo(i);
 
-        std::cout << "\nDevice Name = " << info.name << '\n';
+        std::cout << "\nDevice Name = " << info.name << " (" << i << ")" << '\n';
         if ( info.probed == false )
             std::cout << "Probe Status = UNsuccessful\n";
         else {

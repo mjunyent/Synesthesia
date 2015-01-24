@@ -34,9 +34,9 @@ int main(int argc, const char * argv[]) {
     Tobago.use(0);
     TOBAGO::initOCLwithCurrentOGLcontext();
 
-    //    AudioInput::printDevicesInfo();
+//    AudioInput::printDevicesInfo();
     
-    AudioInput a; //(-1, 0, 512);
+    AudioInput a(7, 0, 1024);
     BeatDetector beat(&a, 4);
     
     std::cout << "Analyzing " << beat.numBands << " bands." << std::endl;
