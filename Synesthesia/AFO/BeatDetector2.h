@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <utility>
 #include <iterator>
+#include <fstream>
 
 class BeatDetector2 {
 public:
@@ -45,6 +46,9 @@ public:
     int maskSelector;
     float* masked;
     float* output;
+
+    std::ofstream passthrough;
+    std::ofstream percussion;
 };
 
 #endif /* defined(__Synesthesia__BeatDetector2__) */
