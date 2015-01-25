@@ -90,7 +90,7 @@ AudioInput::AudioInput(unsigned int device, unsigned int channel, unsigned int b
         if(!found) std::cerr << "No suitable sampling rate found for audio device!";
         else sampleRate = 48000;
     } else sampleRate = 44100;
-    
+
     
 #ifdef REWIRE_OUTPUT
     RtAudio::StreamParameters outParams;
@@ -112,26 +112,28 @@ void AudioInput::start() {
 int AudioInput::record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData) {
 
 #ifdef REWIRE_OUTPUT
-    memcpy(outputBuffer, inputBuffer, nBufferFrames*sizeof(float));
+//    memcpy(outputBuffer, inputBuffer, nBufferFrames*sizeof(float));
 #endif
+
     if(status) {
         (Tobago.log)->write(Log::WARNING) << "Stream overflow detected!";
         std::cerr << "Stream overflow detected" << std::endl;
     }
     else {
         AudioInput* ai = (AudioInput*) userData;
-        float* r = (float*) inputBuffer;
-        ai->record(r, nBufferFrames, streamTime);
+        float* i = (float*) inputBuffer;
+        float* o = (float*) outputBuffer;
+        ai->record(i, o, nBufferFrames, streamTime);
     }
 
     return 0;
 }
 
-void AudioInput::record(float *r, int nbf, double st) {
-    this->f(r, nbf, st);
+void AudioInput::record(float *in, float* out, int nbf, double st) {
+    this->f(in, out, nbf, st);
 }
 
-void AudioInput::setCallback(std::function<void (float *, int, double)> f) {
+void AudioInput::setCallback(std::function<void (float *, float*, int, double)> f) {
     this->f = f;
 }
 

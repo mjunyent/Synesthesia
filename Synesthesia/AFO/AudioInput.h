@@ -36,16 +36,16 @@ public:
 
     void start(); //can throw exception.
 
-    void record(float* r, int nbf, double st);
+    void record(float* in, float* out, int nbf, double st);
 
-    void setCallback(std::function<void(float*, int, double)> f);
+    void setCallback(std::function<void(float*, float*, int, double)> f);
 
     unsigned int device;
     unsigned int channel;
     unsigned int sampleRate;
     unsigned int bufferSize;
     
-    std::function<void(float*, int, double)> f;
+    std::function<void(float*, float*, int, double)> f;
 };
 
 
