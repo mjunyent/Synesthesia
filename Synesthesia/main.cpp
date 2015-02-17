@@ -34,9 +34,8 @@ int main(int argc, const char * argv[]) {
     Tobago.use(0);
     TOBAGO::initOCLwithCurrentOGLcontext();
 
-//    AudioInput::printDevicesInfo();
-
-    AudioInput a(7, 0, 768);
+    AudioInput::printDevicesInfo();
+    AudioInput a(0, 0, 768);
     BeatDetector2 beat(&a);
     beat.setupDraw();
     
