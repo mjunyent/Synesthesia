@@ -35,7 +35,7 @@ int main(int argc, const char * argv[]) {
     TOBAGO::initOCLwithCurrentOGLcontext();
 
     AudioInput::printDevicesInfo();
-    AudioInput a(0, 0, 768);
+    AudioInput a(7, 0, 768);
     BeatDetector2 beat(&a);
     beat.setupDraw();
     
@@ -107,7 +107,7 @@ int main(int argc, const char * argv[]) {
         Tobago.use(1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        beatVBO.subdata(&beat.fBeats[0], 0, sizeof(float)*beat.numBands);
+        beatVBO.subdata(&beat.fBeats[0], 0, sizeof(float)*(beat.numBands));
 
         padsShad.use();
         beatVAO.draw();

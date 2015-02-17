@@ -60,6 +60,7 @@ public:
     
     std::vector< std::vector<float> > maskedrfft;
     float* maskedrfftMean;
+    float* maskedVariances;
 
     
     std::vector<float> fBeats;
