@@ -10,6 +10,8 @@
 #define __Synesthesia__BeatDetector2__
 
 
+#include <iomanip>
+
 #include "Tobago.h"
 #include "AudioInput.h"
 #include "ffft/FFTReal.h"
@@ -46,9 +48,32 @@ public:
     int maskSelector;
     float* masked;
     float* output;
+    
+    int cP;
 
-    std::ofstream passthrough;
-    std::ofstream percussion;
+    
+    int numOctaves;
+    std::vector<int> bandsPerOctave;
+    int numBands;
+    int currentReg;
+    int numRegs;
+    
+    std::vector< std::vector<float> > maskedrfft;
+    float* maskedrfftMean;
+
+    
+    std::vector<float> fBeats;
+//    std::ofstream passthrough;
+//    std::ofstream percussion;
+    
+    
+    
+    
+    void setupDraw();
+    void draw();
+    Shader fftBandsShad;
+    VAO *rfftVAO;
+    VBO *rfftVBO;
 };
 
 #endif /* defined(__Synesthesia__BeatDetector2__) */
