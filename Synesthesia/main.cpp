@@ -109,7 +109,7 @@ int main(int argc, const char * argv[]) {
 
 //        beatVBO.subdata(&beat.fBeats[0], 0, sizeof(float)*(beat.numBands));
         //Hardcoded
-        beatVBO.subdata(&beat.fBeats[0], 0, sizeof(float)*(20));
+        beatVBO.subdata(&beat.fBeats[0], 0, sizeof(float)*(beat.numBands));
 
         padsShad.use();
         beatVAO.draw();

@@ -65,6 +65,7 @@ public:
     float* rfftMean;
     float* Variances;
     float* cValue;
+    float* showmaskedrfft;
 
     
     std::vector<float> fBeats;
