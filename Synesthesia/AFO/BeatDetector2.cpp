@@ -93,16 +93,23 @@ BeatDetector2::BeatDetector2(AudioInput* adc) : adc(adc) {
     }
 
     //HARDCODED
-    numBands = 2;
+    numBands = 3;
 
     numRegs = 40;
     currentReg = -1;
     maskedrfft = std::vector< std::vector<float> > (numRegs, std::vector<float>(numBands, 0.0f));
+    rfftBands = std::vector< std::vector<float> > (numRegs, std::vector<float>(numBands, 0.0f));
     maskedrfftMean = (float*)malloc(sizeof(float)*numBands);
     maskedVariances = (float*)malloc(sizeof(float)*numBands);
+    rfftMean = (float*)malloc(sizeof(float)*numBands);
+    Variances = (float*)malloc(sizeof(float)*numBands);
 
+    cValue = (float*)malloc(sizeof(float)*numBands);
 
-    fBeats = std::vector<float>(numBands+1, 0.0f);
+//    fBeats = std::vector<float>(numBands+1, 0.0f);
+
+    //HARDCODED
+    fBeats = std::vector<float>(20, 0.0f);
 
     cP = 0;
 
@@ -129,6 +136,7 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
     }
     
     int jumpBack = timeSize/2;
+    jumpBack = 3;
 
     if(fftPointer < jumpBack) {
         cP = timeSize - (jumpBack-fftPointer);
@@ -152,9 +160,11 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
         for(int j=0; j<timeSize; j++) {
             median[j] = rfft[j][i];
         }
+//        median[timeSize] = rfft[timeSize-1][i] + (rfft[timeSize-1][i] - rfft[timeSize-2][i]);
+//        median[timeSize+1] = median[timeSize] + (median[timeSize] - median[timeSize-1]);
         sort(median.begin(), median.end());
-        
-        H[i] = median[median.size()/2];
+
+        H[i] = median[(median.size())/2];
     }
 
 
@@ -162,16 +172,20 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
         maskedrfftMean[i] = 0.0f;
         for(int j=0; j<numRegs; j++) {
             maskedrfftMean[i] += maskedrfft[j][i];
+            rfftMean[i] += rfftBands[j][i];
         }
         maskedrfftMean[i] /= float(numRegs);
+        rfftMean[i] /= float(numRegs);
     }
 
     for(int i=0; i<numBands; i++) {
         maskedVariances[i] = 0.0f;
         for(int j=0; j<numRegs; j++) {
             maskedVariances[i] += std::pow(maskedrfft[j][i]-maskedrfftMean[i], 2.0);
+            Variances[i] += std::pow(rfftBands[j][i]-rfftMean[i], 2.0);
         }
         maskedVariances[i] /= float(numRegs);
+        Variances[i] /= float(numRegs);
     }
     
     currentReg++;
@@ -187,19 +201,36 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
         }
 
         maskedrfft[currentReg][0] = 0.0;
+        rfftBands[currentReg][0] = 0.0;
         for(int i=0; i<3; i++) {
             float m = (P[i]*P[i]) / (H[i]*H[i] + P[i]*P[i]);
             maskedrfft[currentReg][0] += m*rfft[cP][i];
+            rfftBands[currentReg][0] += rfft[cP][i];
         }
         maskedrfft[currentReg][0] /= 3.0;
+        rfftBands[currentReg][0] /= 3.0;
 
         maskedrfft[currentReg][1] = 0.0;
+        rfftBands[currentReg][1] = 0.0;
         for(int i=4; i<11; i++) {
             float m = (P[i]*P[i]) / (H[i]*H[i] + P[i]*P[i]);
             maskedrfft[currentReg][1] += m*rfft[cP][i];
+            rfftBands[currentReg][1] += rfft[cP][i];
         }
         maskedrfft[currentReg][1] /= 7.0;
+        rfftBands[currentReg][1] /= 7.0;
 
+        maskedrfft[currentReg][2] = 0.0;
+        rfftBands[currentReg][2] = 0.0;
+        for(int i=0; i<10; i++) {
+            float m = (P[i]*P[i]) / (H[i]*H[i] + P[i]*P[i]);
+            maskedrfft[currentReg][2] += m*rfft[cP][i];
+            rfftBands[currentReg][2] += rfft[cP][i];
+        }
+        maskedrfft[currentReg][2] /= 10.0;
+        rfftBands[currentReg][2] /= 10.0;
+
+        
         
         /*
         maskedrfft[currentReg][0] = 0.0;
@@ -283,15 +314,37 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
         fBeats[numBands] = 0.0;
         for(int i=0; i<numBands; i++) {
             float c = (-1.0/200.0)*maskedVariances[i] + 2.5;
+            cValue[i] = c*maskedrfftMean[i];
             fBeats[i] = std::max(0.0, fBeats[i]-4.0*n/44100.0);
-            if(maskedrfft[currentReg][i] > 2.5*maskedrfftMean[i]) fBeats[i] = 1.2;
+            if(maskedrfft[currentReg][i] >= 2.5*maskedrfftMean[i]) fBeats[i] = 1.2;
             fBeats[numBands] += fBeats[i];
         }
         fBeats[numBands] /= float(numBands);
 
 
-        fft_object->do_ifft(&fft[cP][0], output);
-//        fft_object->do_ifft(masked, output);
+        fBeats[9] = std::max(0.0, fBeats[9]-4.0*n/44100.0);
+        if(maskedrfft[currentReg][0] >= 1.5*rfftMean[0]) fBeats[9] = 1.2;
+        fBeats[10] = std::max(0.0, fBeats[10]-4.0*n/44100.0);
+        if(maskedrfft[currentReg][1] >= 0.8*rfftMean[1]) fBeats[10] = 1.2;
+        fBeats[numBands] = 0.0;
+
+        
+        int lastReg = currentReg-1;
+        if(lastReg < 0) lastReg = numRegs-1;
+
+        fBeats[17] = std::max(0.0, fBeats[17]-4.0*n/44100.0);
+        float maskedDiff = maskedrfft[currentReg][0] - maskedrfft[lastReg][0];
+        float diff = rfftBands[currentReg][0] - rfftBands[lastReg][0];
+        if(maskedDiff > 3.0*diff && maskedDiff > 0) fBeats[17] = 1.2;
+
+        fBeats[18] = std::max(0.0, fBeats[18]-4.0*n/44100.0);
+        maskedDiff = maskedrfft[currentReg][1] - maskedrfft[lastReg][1];
+        diff = rfftBands[currentReg][1] - rfftBands[lastReg][1];
+        if(maskedDiff > 3.0*diff && maskedDiff > 0) fBeats[18] = 1.2;
+
+
+//        fft_object->do_ifft(&fft[cP][0], output);
+        fft_object->do_ifft(masked, output);
         fft_object->rescale(output);
 
         memcpy(out, output+256, sizeof(float)*768);
@@ -312,8 +365,9 @@ void BeatDetector2::setupDraw() {
                                 layout(location = 0) in float vertexPosition;\
                                 uniform int npoints;\
                                 uniform float rmax;\
+                                uniform float offset;\
                                 void main(){\
-                                gl_Position =  vec4((2.0*gl_VertexID)/float(npoints) - 1.0, vertexPosition/rmax-1.0, 0, 1);\
+                                gl_Position =  vec4((2.0*gl_VertexID)/float(npoints) - 1.0 + offset/float(npoints+1), vertexPosition/rmax-1.0, 0, 1);\
                                 }");
     fftBandsShad.loadFromString(GL_GEOMETRY_SHADER,
                                 "#version 150 core\
@@ -323,11 +377,11 @@ void BeatDetector2::setupDraw() {
                                 void main(void){\
                                 gl_Position = vec4(gl_in[0].gl_Position.x, -1.0, 0.0, 1.0);\
                                 EmitVertex();\
-                                gl_Position = vec4(gl_in[0].gl_Position.x+2.0/npoints, -1.0, 0.0, 1.0);\
+                                gl_Position = vec4(gl_in[0].gl_Position.x+1.0/(3.0*npoints), -1.0, 0.0, 1.0);\
                                 EmitVertex();\
                                 gl_Position = gl_in[0].gl_Position;\
                                 EmitVertex();\
-                                gl_Position = vec4(gl_in[0].gl_Position.x+2.0/npoints, gl_in[0].gl_Position.y, 0.0, 1.0);\
+                                gl_Position = vec4(gl_in[0].gl_Position.x+1.0/(3.0*npoints), gl_in[0].gl_Position.y, 0.0, 1.0);\
                                 EmitVertex();\
                                 }");
     
@@ -342,6 +396,7 @@ void BeatDetector2::setupDraw() {
     fftBandsShad.addUniform("cl");
     fftBandsShad.addUniform("npoints");
     fftBandsShad.addUniform("rmax");
+    fftBandsShad.addUniform("offset");
 }
 
 void BeatDetector2::draw() {
@@ -361,15 +416,41 @@ void BeatDetector2::draw() {
     rfftVBO->subdata(&maskedrfft[currentReg][0], 0, numBands*sizeof(float));
     fftBandsShad.use();
     fftBandsShad("npoints", numBands);
-    fftBandsShad("rmax", 10.0f);
+    fftBandsShad("rmax", 15.0f);
     fftBandsShad("cl", new glm::vec3(1.0, 0.0, 0.0));
+    fftBandsShad("offset", 0.0f);
     rfftVAO->draw();
-    
+
+    rfftVBO->subdata(&rfftBands[currentReg][0], 0, numBands*sizeof(float));
+    fftBandsShad.use();
+    fftBandsShad("npoints", numBands);
+    fftBandsShad("rmax", 15.0f);
+    fftBandsShad("cl", new glm::vec3(0.8, 0.0, 0.0));
+    fftBandsShad("offset", 0.2f);
+    rfftVAO->draw();
+
+    rfftVBO->subdata(cValue, 0, numBands*sizeof(float));
+    fftBandsShad.use();
+    fftBandsShad("npoints", numBands);
+    fftBandsShad("rmax", 15.0f);
+    fftBandsShad("cl", new glm::vec3(1.0, 1.0, 0.0));
+    fftBandsShad("offset", 0.4f);
+    rfftVAO->draw();
+
     rfftVBO->subdata(maskedrfftMean, 0, numBands*sizeof(float));
     fftBandsShad.use();
     fftBandsShad("npoints", numBands);
-    fftBandsShad("rmax", 10.0f);
+    fftBandsShad("rmax", 15.0f);
     fftBandsShad("cl", new glm::vec3(1.0, 1.0, 1.0));
+    fftBandsShad("offset", 0.6f);
+    rfftVAO->draw();
+
+    rfftVBO->subdata(rfftMean, 0, numBands*sizeof(float));
+    fftBandsShad.use();
+    fftBandsShad("npoints", numBands);
+    fftBandsShad("rmax", 15.0f);
+    fftBandsShad("cl", new glm::vec3(0.8, 0.8, 0.8));
+    fftBandsShad("offset", 0.8f);
     rfftVAO->draw();
     
     rfftVBO->subdata(maskedVariances, 0, numBands*sizeof(float));
@@ -377,6 +458,16 @@ void BeatDetector2::draw() {
     fftBandsShad("npoints", numBands);
     fftBandsShad("rmax", 100.0f);
     fftBandsShad("cl", new glm::vec3(0.0, 0.0, 1.0));
+    fftBandsShad("offset", 1.2f);
+    rfftVAO->draw();
+
+
+    rfftVBO->subdata(Variances, 0, numBands*sizeof(float));
+    fftBandsShad.use();
+    fftBandsShad("npoints", numBands);
+    fftBandsShad("rmax", 100.0f);
+    fftBandsShad("cl", new glm::vec3(0.0, 0.0, 0.8));
+    fftBandsShad("offset", 1.4f);
     rfftVAO->draw();
 }
 

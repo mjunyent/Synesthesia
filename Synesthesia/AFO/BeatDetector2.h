@@ -59,8 +59,12 @@ public:
     int numRegs;
     
     std::vector< std::vector<float> > maskedrfft;
+    std::vector< std::vector<float> > rfftBands;
     float* maskedrfftMean;
     float* maskedVariances;
+    float* rfftMean;
+    float* Variances;
+    float* cValue;
 
     
     std::vector<float> fBeats;

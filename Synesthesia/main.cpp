@@ -107,7 +107,9 @@ int main(int argc, const char * argv[]) {
         Tobago.use(1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        beatVBO.subdata(&beat.fBeats[0], 0, sizeof(float)*(beat.numBands));
+//        beatVBO.subdata(&beat.fBeats[0], 0, sizeof(float)*(beat.numBands));
+        //Hardcoded
+        beatVBO.subdata(&beat.fBeats[0], 0, sizeof(float)*(20));
 
         padsShad.use();
         beatVAO.draw();
