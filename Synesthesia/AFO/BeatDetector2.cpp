@@ -327,10 +327,10 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
 
 
         for(int i=0; i<numBands; i++) {
-            float c = (-1.0/200.0)*maskedVariances[i] + 2.5;
+            float c = (-1.0/300.0)*maskedVariances[i] + 2.6;
             cValue[i] = c*maskedrfftMean[i];
             fBeats[i] = std::max(0.0, fBeats[i]-4.0*n/44100.0);
-            if(maskedrfft[currentReg][i] >= 2.5*maskedrfftMean[i]) fBeats[i] = 1.2;
+            if(maskedrfft[currentReg][i] >= c*maskedrfftMean[i]) fBeats[i] = 1.2;
         }
 
 
