@@ -49,7 +49,7 @@ BeatDetector2::BeatDetector2(AudioInput* adc) : adc(adc) {
         throw 4;
     }
 
-    
+
     fft_object = new ffft::FFTReal<float>(1024);
 
     tempBuffer = (float*)malloc(sizeof(float)*1024);
@@ -57,12 +57,16 @@ BeatDetector2::BeatDetector2(AudioInput* adc) : adc(adc) {
     Nremaining = 256;
 
     writeWAVData("mySound.wav", tempBuffer, 1024, 44100, 1);
-    
+
     timeSize = 7;
     freqSize = 7;
 
     fft = std::vector< std::vector<float> >(timeSize, std::vector<float>(1024, 0.0));
     rfft = std::vector< std::vector<float> >(timeSize, std::vector<float>(512, 0.0));
+
+    energies = std::vector<float>(timeSize, 0.0);
+    displayEnergies = std::vector<float>(1024, 0.0);
+    displayEnergiesP = 0;
 
     P = std::vector<float>(512, 0.0);
     H = std::vector<float>(512, 0.0);
@@ -123,6 +127,18 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
     memcpy(tempBuffer+Nremaining, in, sizeof(float)*n);
     memcpy(remaining, in+(n-Nremaining), sizeof(float)*Nremaining);
 
+    energies[fftPointer] = 0.0;
+    for(int i=0; i<1024; i++) {
+        energies[fftPointer] += tempBuffer[i]*tempBuffer[i];
+    }
+    energies[fftPointer] /= 1024.0f;
+    displayEnergies[displayEnergiesP] = energies[fftPointer];
+    
+    displayEnergiesP++;
+    displayEnergiesP %= 1024;
+//    std::cout << energies[fftPointer] << std::endl;
+    
+    
     //passthrough.write((const char*)in, sizeof(float)*768);
     
     fft_object->do_fft(&fft[fftPointer][0], tempBuffer);
@@ -332,6 +348,30 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
 }
 
 void BeatDetector2::setupDraw() {
+    waveShad.loadFromString(GL_VERTEX_SHADER,
+                            "#version 330 core\
+                            layout(location = 0) in float vertexPosition;\
+                            uniform int npoints;\
+                            void main(){\
+                            gl_Position =  vec4((2.0*gl_VertexID)/float(npoints-1.0) - 1.0, vertexPosition*5.0, 0, 1);\
+                            }");
+    waveShad.loadFromString(GL_FRAGMENT_SHADER,
+                            "#version 330 core\
+                            layout(location = 0) out vec4 color;\
+                            uniform float bb;\
+                            void main(){\
+                            color = vec4(1.0, bb, bb, 1.0);\
+                            }");
+    waveShad.link();
+    waveShad.addUniform("npoints");
+    waveShad.addUniform("bb");
+    
+    waveVAO = new VAO(GL_LINE_STRIP);
+    waveVBO = new VBO(displayEnergies);
+    waveVAO->addAttribute(0, 1, waveVBO);
+
+    
+    
     rfftVAO = new VAO(GL_POINTS);
     rfftVBO = new VBO(&rfft[0][0], 512);
     rfftVAO->addAttribute(0, 1, rfftVBO);
@@ -437,7 +477,6 @@ void BeatDetector2::draw() {
     fftBandsShad("offset", 1.2f);
     rfftVAO->draw();
 
-
     rfftVBO->subdata(Variances, 0, numBands*sizeof(float));
     fftBandsShad.use();
     fftBandsShad("npoints", numBands);
@@ -445,8 +484,7 @@ void BeatDetector2::draw() {
     fftBandsShad("cl", new glm::vec3(0.0, 0.0, 0.8));
     fftBandsShad("offset", 1.4f);
     rfftVAO->draw();
-    
-    
+
     rfftVBO->subdata(&rfft[cP][0], 0, 512*sizeof(float));
     fftBandsShad.use();
     fftBandsShad("npoints", 512);
@@ -462,6 +500,13 @@ void BeatDetector2::draw() {
     fftBandsShad("cl", new glm::vec3(1.0, 0.0, 1.0));
     fftBandsShad("offset", 1.0f/512.0f);
     rfftVAO->draw();
+
+    waveVBO->subdata(&displayEnergies[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", 0.0f);
+    waveVAO->draw();
+    std::cout << displayEnergiesP << std::endl;
 
 }
 

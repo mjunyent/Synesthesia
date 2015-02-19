@@ -67,6 +67,10 @@ public:
     float* cValue;
     float* showmaskedrfft;
 
+    std::vector<float> energies;
+    std::vector<float> displayEnergies;
+    int displayEnergiesP;
+
     
     std::vector<float> fBeats;
 //    std::ofstream passthrough;
@@ -80,6 +84,10 @@ public:
     Shader fftBandsShad;
     VAO *rfftVAO;
     VBO *rfftVBO;
+    
+    Shader waveShad;
+    VAO *waveVAO;
+    VBO *waveVBO;
 };
 
 #endif /* defined(__Synesthesia__BeatDetector2__) */

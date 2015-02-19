@@ -73,7 +73,7 @@ AudioInput::AudioInput(unsigned int device, unsigned int channel, unsigned int b
         parameters.deviceId = adc.getDefaultInputDevice();
     else
         parameters.deviceId = device;
-    
+
     std::cerr << "Device selected: " <<  getDeviceInfo(parameters.deviceId).name << std::endl;
 
     parameters.nChannels = 1;
