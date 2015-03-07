@@ -14,7 +14,13 @@
 #include <functional>
 #include "Tobago.h"
 
+#define MACBOOK 4
+
+#ifdef MACBOOK
+#define REWIRE_OUTPUT 1
+#else
 #define REWIRE_OUTPUT 7
+#endif
 
 class AudioInput {
 public:

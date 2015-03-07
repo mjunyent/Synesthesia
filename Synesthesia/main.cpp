@@ -35,7 +35,11 @@ int main(int argc, const char * argv[]) {
     TOBAGO::initOCLwithCurrentOGLcontext();
 
     AudioInput::printDevicesInfo();
+#ifdef MACBOOK
+    AudioInput a(0, 1, 768);
+#else
     AudioInput a(7, 0, 768);
+#endif
     BeatDetector2 beat(&a);
     beat.setupDraw();
     

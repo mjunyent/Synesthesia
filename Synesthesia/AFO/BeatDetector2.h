@@ -69,6 +69,7 @@ public:
 
     std::vector<float> energies;
     std::vector<float> displayEnergies;
+    std::vector<float> displayMaskedEnergies;
     int displayEnergiesP;
 
     
@@ -76,8 +77,19 @@ public:
 //    std::ofstream passthrough;
 //    std::ofstream percussion;
     
-    
-    
+    std::vector<float> displayKickEnergy;
+    std::vector<float> displaySnareEnergy;
+    std::vector<float> displayCymbalEnergy;
+
+    std::vector<float> displayKickEnergyComp;
+    std::vector<float> displaySnareEnergyComp;
+    std::vector<float> displayCymbalEnergyComp;
+
+    std::vector<float> displayKickCValue;
+    std::vector<float> displaySnareCValue;
+    std::vector<float> displayCymbalCValue;
+
+    //todo, maybe look at filtered energy?
     
     void setupDraw();
     void draw();

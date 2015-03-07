@@ -66,6 +66,16 @@ BeatDetector2::BeatDetector2(AudioInput* adc) : adc(adc) {
 
     energies = std::vector<float>(timeSize, 0.0);
     displayEnergies = std::vector<float>(1024, 0.0);
+    displayMaskedEnergies = std::vector<float>(1024, 0.0);
+    displayKickEnergy = std::vector<float>(1024, 0.0);
+    displaySnareEnergy = std::vector<float>(1024, 0.0);
+    displayCymbalEnergy = std::vector<float>(1024, 0.0);
+    displayKickEnergyComp = std::vector<float>(1024, 0.0);
+    displaySnareEnergyComp = std::vector<float>(1024, 0.0);
+    displayCymbalEnergyComp = std::vector<float>(1024, 0.0);
+    displayKickCValue = std::vector<float>(1024, 0.0);
+    displaySnareCValue = std::vector<float>(1024, 0.0);
+    displayCymbalCValue = std::vector<float>(1024, 0.0);
     displayEnergiesP = 0;
 
     P = std::vector<float>(512, 0.0);
@@ -99,7 +109,7 @@ BeatDetector2::BeatDetector2(AudioInput* adc) : adc(adc) {
     //HARDCODED
     numBands = 3;
 
-    numRegs = 40;
+    numRegs = 70;
     currentReg = -1;
     maskedrfft = std::vector< std::vector<float> > (numRegs, std::vector<float>(numBands, 0.0f));
     rfftBands = std::vector< std::vector<float> > (numRegs, std::vector<float>(numBands, 0.0f));
@@ -123,32 +133,39 @@ BeatDetector2::BeatDetector2(AudioInput* adc) : adc(adc) {
 }
 
 void BeatDetector2::callback(float *in, float* out, int n, double t) {
+    //Copy to tempBuffer last 256 samples
     memcpy(tempBuffer, remaining, sizeof(float)*Nremaining);
+    //Copy to tempBuffer current 768 samples
     memcpy(tempBuffer+Nremaining, in, sizeof(float)*n);
+    //Copy to remaining last current 256 samples
     memcpy(remaining, in+(n-Nremaining), sizeof(float)*Nremaining);
 
+
+
+
+    //Calculate energies from tempBuffer
     energies[fftPointer] = 0.0;
     for(int i=0; i<1024; i++) {
         energies[fftPointer] += tempBuffer[i]*tempBuffer[i];
     }
     energies[fftPointer] /= 1024.0f;
     displayEnergies[displayEnergiesP] = energies[fftPointer];
-    
-    displayEnergiesP++;
-    displayEnergiesP %= 1024;
-//    std::cout << energies[fftPointer] << std::endl;
-    
-    
-    //passthrough.write((const char*)in, sizeof(float)*768);
-    
+
+
+
+
+    //Do FFT on tempbuffer
     fft_object->do_fft(&fft[fftPointer][0], tempBuffer);
 
+    //save on rfft real fft values.
     rfft[fftPointer][0] = std::fabs(fft[fftPointer][0]);
     for(int i=1; i<512; i++) {
         rfft[fftPointer][i] = sqrt( fft[fftPointer][i]*fft[fftPointer][i] +
                                     fft[fftPointer][i+512]*fft[fftPointer][i+512]);
     }
-    
+
+
+    //Calculate median on freq axis (P).
     int jumpBack = timeSize/2;
     jumpBack = 3;
 
@@ -167,23 +184,23 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
 
         P[i] = median[median.size()/2];
     }
+
     
-    
+    //Calculate median on time axis (H).
     std::vector<float> median(timeSize);
     for(int i=0; i<512; i++) {
         for(int j=0; j<timeSize; j++) {
             median[j] = rfft[j][i];
         }
-//        median[timeSize] = rfft[timeSize-1][i] + (rfft[timeSize-1][i] - rfft[timeSize-2][i]);
-//        median[timeSize+1] = median[timeSize] + (median[timeSize] - median[timeSize-1]);
         sort(median.begin(), median.end());
-
         H[i] = median[(median.size())/2];
     }
 
 
+    //For each band calculate it's last seconds average.
     for(int i=0; i<numBands; i++) {
         maskedrfftMean[i] = 0.0f;
+        rfftMean[i] = 0.0f;
         for(int j=0; j<numRegs; j++) {
             maskedrfftMean[i] += maskedrfft[j][i];
             rfftMean[i] += rfftBands[j][i];
@@ -192,8 +209,10 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
         rfftMean[i] /= float(numRegs);
     }
 
+    //Calculate variances.
     for(int i=0; i<numBands; i++) {
         maskedVariances[i] = 0.0f;
+        Variances[i] = 0.0f;
         for(int j=0; j<numRegs; j++) {
             maskedVariances[i] += std::pow(maskedrfft[j][i]-maskedrfftMean[i], 2.0);
             Variances[i] += std::pow(rfftBands[j][i]-rfftMean[i], 2.0);
@@ -201,20 +220,32 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
         maskedVariances[i] /= float(numRegs);
         Variances[i] /= float(numRegs);
     }
-    
+
     currentReg++;
     currentReg %= numRegs;
     
-
+    //Parse results on the masked rfft.
     if(maskSelector == 0) {
+        //Calculate masked rfft for percussive sounds.
         for(int i=0; i<512; i++) {
             float m = (P[i]*P[i]) / (H[i]*H[i] + P[i]*P[i]);
             masked[i] = m*fft[cP][i];
             masked[i+512] = m*fft[cP][i+512];
             showmaskedrfft[i] = m*rfft[cP][i];
-//            maskedrfft[maskedPointer][i] = m*rfft[cP][i];
         }
 
+        //Display energies.
+        displayEnergies[displayEnergiesP] = 0.0;
+        displayMaskedEnergies[displayEnergiesP] = 0.0;
+        for(int i=0; i<512; i++) {
+            displayEnergies[displayEnergiesP] += rfft[cP][i];
+            displayMaskedEnergies[displayEnergiesP] += showmaskedrfft[i];
+        }
+        displayEnergies[displayEnergiesP] /= 512.0;
+        displayMaskedEnergies[displayEnergiesP] /= 512.0;
+
+        //Group rfft in 3 bands for masked and unmasked.
+        //BAND 1 :: [0,3)
         maskedrfft[currentReg][0] = 0.0;
         rfftBands[currentReg][0] = 0.0;
         for(int i=0; i<3; i++) {
@@ -224,7 +255,9 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
         }
         maskedrfft[currentReg][0] /= 3.0;
         rfftBands[currentReg][0] /= 3.0;
+        displayKickEnergy[displayEnergiesP] = maskedrfft[currentReg][0];
 
+        //BAND 2 :: [4,11)
         maskedrfft[currentReg][1] = 0.0;
         rfftBands[currentReg][1] = 0.0;
         for(int i=4; i<11; i++) {
@@ -234,7 +267,9 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
         }
         maskedrfft[currentReg][1] /= 7.0;
         rfftBands[currentReg][1] /= 7.0;
+        displaySnareEnergy[displayEnergiesP] = maskedrfft[currentReg][1];
 
+        //BAND 2 :: [100,200)
         maskedrfft[currentReg][2] = 0.0;
         rfftBands[currentReg][2] = 0.0;
         for(int i=100; i<200; i++) {
@@ -244,105 +279,41 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
         }
         maskedrfft[currentReg][2] /= 100.0;
         rfftBands[currentReg][2] /= 100.0;
-
-        
-        
-        /*
-        maskedrfft[currentReg][0] = 0.0;
-        for(int i=0; i<2; i++) {
-            float m = (P[i]*P[i]) / (H[i]*H[i] + P[i]*P[i]);
-            maskedrfft[currentReg][0] += m*rfft[cP][i];
-        }
-        maskedrfft[currentReg][0] /= 2.0;
-
-        maskedrfft[currentReg][1] = 0.0;
-        for(int i=2; i<6; i++) {
-            float m = (P[i]*P[i]) / (H[i]*H[i] + P[i]*P[i]);
-            maskedrfft[currentReg][1] += m*rfft[cP][i];
-        }
-        maskedrfft[currentReg][1] /= 4.0;
-
-        maskedrfft[currentReg][2] = 0.0;
-        for(int i=6; i<21; i++) {
-            float m = (P[i]*P[i]) / (H[i]*H[i] + P[i]*P[i]);
-            maskedrfft[currentReg][2] += m*rfft[cP][i];
-        }
-        maskedrfft[currentReg][2] /= 15.0;*/
-
-/*        maskedrfft[currentReg][0]  = (P[0]*P[0]) / (H[0]*H[0] + P[0]*P[0])*rfft[cP][0];
-        maskedrfft[currentReg][0] += (P[1]*P[1]) / (H[1]*H[1] + P[1]*P[1])*rfft[cP][1];
-        maskedrfft[currentReg][0] += (P[2]*P[2]) / (H[2]*H[2] + P[2]*P[2])*rfft[cP][2];
-        maskedrfft[currentReg][0] += (P[3]*P[3]) / (H[3]*H[3] + P[3]*P[3])*rfft[cP][3];
-        maskedrfft[currentReg][0] /= 4.0f;
-
-        maskedrfft[currentReg][1]  = (P[5]*P[5]) / (H[5]*H[5] + P[5]*P[5])*rfft[cP][5];
-        maskedrfft[currentReg][1] += (P[6]*P[6]) / (H[6]*H[6] + P[6]*P[6])*rfft[cP][6];
-        maskedrfft[currentReg][1] += (P[7]*P[7]) / (H[7]*H[7] + P[7]*P[7])*rfft[cP][7];
-        maskedrfft[currentReg][1] += (P[8]*P[8]) / (H[8]*H[8] + P[8]*P[8])*rfft[cP][8];
-        maskedrfft[currentReg][1] += (P[9]*P[9]) / (H[9]*H[9] + P[9]*P[9])*rfft[cP][9];
-        maskedrfft[currentReg][1] += (P[10]*P[10]) / (H[10]*H[10] + P[10]*P[10])*rfft[cP][10];
-        maskedrfft[currentReg][1] += (P[11]*P[11]) / (H[11]*H[11] + P[11]*P[11])*rfft[cP][11];
-        maskedrfft[currentReg][1] += (P[12]*P[12]) / (H[12]*H[12] + P[12]*P[12])*rfft[cP][12];
-        maskedrfft[currentReg][1] /= 8.0f;*/
- 
-/*
-        maskedrfft[currentReg][0]  = (P[0]*P[0]) / (H[0]*H[0] + P[0]*P[0])*rfft[cP][0];
-        maskedrfft[currentReg][0] += (P[1]*P[1]) / (H[1]*H[1] + P[1]*P[1])*rfft[cP][1];
-        maskedrfft[currentReg][0] += (P[2]*P[2]) / (H[2]*H[2] + P[2]*P[2])*rfft[cP][2];
-        maskedrfft[currentReg][0] += (P[3]*P[3]) / (H[3]*H[3] + P[3]*P[3])*rfft[cP][3];
-        maskedrfft[currentReg][0] += (P[4]*P[4]) / (H[4]*H[4] + P[4]*P[4])*rfft[cP][4];
-        maskedrfft[currentReg][0] += (P[5]*P[5]) / (H[5]*H[5] + P[5]*P[5])*rfft[cP][5];
-        maskedrfft[currentReg][0] += (P[6]*P[6]) / (H[6]*H[6] + P[6]*P[6])*rfft[cP][6];
-        maskedrfft[currentReg][0] += (P[7]*P[7]) / (H[7]*H[7] + P[7]*P[7])*rfft[cP][7];
-        maskedrfft[currentReg][0] += (P[8]*P[8]) / (H[8]*H[8] + P[8]*P[8])*rfft[cP][8];
-        maskedrfft[currentReg][0] += (P[9]*P[9]) / (H[9]*H[9] + P[9]*P[9])*rfft[cP][9];
-        maskedrfft[currentReg][0] += (P[10]*P[10]) / (H[10]*H[10] + P[10]*P[10])*rfft[cP][10];
-        maskedrfft[currentReg][0] += (P[11]*P[11]) / (H[11]*H[11] + P[11]*P[11])*rfft[cP][11];
-        maskedrfft[currentReg][0] /= 10.0f;
-*/
-        
-        /*
-        int rfftP = 0;
-        int fftBandsP = 0;
-        int numSamples = 1;
-        for(int i=0; i<numOctaves; i++) {
-            for(int j=0; j<bandsPerOctave[i]; j++) {
-                maskedrfft[currentReg][fftBandsP] = 0.0f;
-
-                for(int k=0; k<numSamples/bandsPerOctave[i]; k++) {
-                    float m = (P[rfftP]*P[rfftP]) / (H[rfftP]*H[rfftP] + P[rfftP]*P[rfftP]);
-                    maskedrfft[currentReg][fftBandsP] += m*rfft[cP][rfftP];
-                    rfftP++;
-                }
-
-                maskedrfft[currentReg][fftBandsP] /= numSamples/float(bandsPerOctave[i]);
-
-                fftBandsP++;
-            }
-
-            numSamples <<= 1;
-        }*/
+        displayCymbalEnergy[displayEnergiesP] = maskedrfft[currentReg][2];
 
 
-
-
+        //For each band look if there is a beat.
         for(int i=0; i<numBands; i++) {
             float c = (-1.0/300.0)*maskedVariances[i] + 2.6;
-            cValue[i] = c*maskedrfftMean[i];
-            fBeats[i] = std::max(0.0, fBeats[i]-4.0*n/44100.0);
+            cValue[i] = c*maskedrfftMean[i]; //Save c*mrfft to display.
+
+            if(i==0) {
+                displayKickCValue[displayEnergiesP] = c-2.5;
+                displayKickEnergyComp[displayEnergiesP] = c*maskedrfftMean[i];
+            } else if(i==1) {
+                displaySnareCValue[displayEnergiesP] = c-2.5;
+                displaySnareEnergyComp[displayEnergiesP] = c*maskedrfftMean[i];
+            } else if (i==2) {
+                displayCymbalCValue[displayEnergiesP] = c-2.5;
+                displayCymbalEnergyComp[displayEnergiesP] = c*maskedrfftMean[i];
+            }
+            fBeats[i] = std::max(0.0, fBeats[i]-10.0*n/44100.0); //Decrease fbeats.
             if(maskedrfft[currentReg][i] >= c*maskedrfftMean[i]) fBeats[i] = 1.2;
         }
 
 
-
-//        fft_object->do_ifft(&fft[cP][0], output);
+        //Inverse masked fft and copy to the output.
         fft_object->do_ifft(masked, output);
         fft_object->rescale(output);
-
         memcpy(out, output+256, sizeof(float)*768);
+
+        //Save to a file.
         //percussion.write((const char*)(output+256), sizeof(float)*768);
     }
 
+    //Increase counters.
+    displayEnergiesP++;
+    displayEnergiesP %= 1024;
     fftPointer++;
     fftPointer %= timeSize;
 }
@@ -352,19 +323,23 @@ void BeatDetector2::setupDraw() {
                             "#version 330 core\
                             layout(location = 0) in float vertexPosition;\
                             uniform int npoints;\
+                            uniform float yOffset;\
+                            uniform float K;\
                             void main(){\
-                            gl_Position =  vec4((2.0*gl_VertexID)/float(npoints-1.0) - 1.0, vertexPosition*5.0, 0, 1);\
+                            gl_Position =  vec4((2.0*gl_VertexID)/float(npoints-1.0) - 1.0, vertexPosition*K+yOffset, 0, 1);\
                             }");
     waveShad.loadFromString(GL_FRAGMENT_SHADER,
                             "#version 330 core\
                             layout(location = 0) out vec4 color;\
-                            uniform float bb;\
+                            uniform vec3 bb;\
                             void main(){\
-                            color = vec4(1.0, bb, bb, 1.0);\
+                            color = vec4(bb, 1.0);\
                             }");
     waveShad.link();
+    waveShad.addUniform("yOffset");
     waveShad.addUniform("npoints");
     waveShad.addUniform("bb");
+    waveShad.addUniform("K");
     
     waveVAO = new VAO(GL_LINE_STRIP);
     waveVBO = new VBO(displayEnergies);
@@ -416,98 +391,119 @@ void BeatDetector2::setupDraw() {
 }
 
 void BeatDetector2::draw() {
-      //display fftr[cP] and maskedrfft they have size 512
-/*    rfftVBO->subdata(&rfft[cP][0], 0, 512*sizeof(float));
-    fftBandsShad.use();
-    fftBandsShad("npoints", 512);
-    fftBandsShad("rmax", 10.0f);
-    fftBandsShad("cl", new glm::vec3(1.0, 1.0, 0.0));
-    rfftVAO->draw();
-*/
-
-//    bsd[0] = maskedrfft[0] + maskedrfft[1] + maskedrfft[2] + maskedrfft[3];
-//    bsd[1] = maskedrfft[5] + maskedrfft[6] + maskedrfft[7] + maskedrfft[8] + maskedrfft[9] + maskedrfft[10] + maskedrfft[11] + maskedrfft[12];
     if(currentReg == -1) return;
-    
-    rfftVBO->subdata(&maskedrfft[currentReg][0], 0, numBands*sizeof(float));
-    fftBandsShad.use();
-    fftBandsShad("npoints", numBands);
-    fftBandsShad("rmax", 15.0f);
-    fftBandsShad("cl", new glm::vec3(1.0, 0.0, 0.0));
-    fftBandsShad("offset", 0.0f);
-    rfftVAO->draw();
 
-    rfftVBO->subdata(&rfftBands[currentReg][0], 0, numBands*sizeof(float));
-    fftBandsShad.use();
-    fftBandsShad("npoints", numBands);
-    fftBandsShad("rmax", 15.0f);
-    fftBandsShad("cl", new glm::vec3(0.8, 0.0, 0.0));
-    fftBandsShad("offset", 0.2f);
-    rfftVAO->draw();
-
-    rfftVBO->subdata(cValue, 0, numBands*sizeof(float));
-    fftBandsShad.use();
-    fftBandsShad("npoints", numBands);
-    fftBandsShad("rmax", 15.0f);
-    fftBandsShad("cl", new glm::vec3(1.0, 1.0, 0.0));
-    fftBandsShad("offset", 0.4f);
-    rfftVAO->draw();
-
-    rfftVBO->subdata(maskedrfftMean, 0, numBands*sizeof(float));
-    fftBandsShad.use();
-    fftBandsShad("npoints", numBands);
-    fftBandsShad("rmax", 15.0f);
-    fftBandsShad("cl", new glm::vec3(1.0, 1.0, 1.0));
-    fftBandsShad("offset", 0.6f);
-    rfftVAO->draw();
-
-    rfftVBO->subdata(rfftMean, 0, numBands*sizeof(float));
-    fftBandsShad.use();
-    fftBandsShad("npoints", numBands);
-    fftBandsShad("rmax", 15.0f);
-    fftBandsShad("cl", new glm::vec3(0.8, 0.8, 0.8));
-    fftBandsShad("offset", 0.8f);
-    rfftVAO->draw();
-    
-    rfftVBO->subdata(maskedVariances, 0, numBands*sizeof(float));
-    fftBandsShad.use();
-    fftBandsShad("npoints", numBands);
-    fftBandsShad("rmax", 100.0f);
-    fftBandsShad("cl", new glm::vec3(0.0, 0.0, 1.0));
-    fftBandsShad("offset", 1.2f);
-    rfftVAO->draw();
-
-    rfftVBO->subdata(Variances, 0, numBands*sizeof(float));
-    fftBandsShad.use();
-    fftBandsShad("npoints", numBands);
-    fftBandsShad("rmax", 100.0f);
-    fftBandsShad("cl", new glm::vec3(0.0, 0.0, 0.8));
-    fftBandsShad("offset", 1.4f);
-    rfftVAO->draw();
-
+    //Paint rfft
     rfftVBO->subdata(&rfft[cP][0], 0, 512*sizeof(float));
     fftBandsShad.use();
     fftBandsShad("npoints", 512);
     fftBandsShad("rmax", 2.0f);
-    fftBandsShad("cl", new glm::vec3(0.0, 0.8, 0.8));
+    fftBandsShad("cl", new glm::vec3(0.0, 0.2, 0.2));
     fftBandsShad("offset", 0.0f);
     rfftVAO->draw();
 
+    //Paint masked rfft
     rfftVBO->subdata(showmaskedrfft, 0, 512*sizeof(float));
     fftBandsShad.use();
     fftBandsShad("npoints", 512);
     fftBandsShad("rmax", 2.0f);
-    fftBandsShad("cl", new glm::vec3(1.0, 0.0, 1.0));
+    fftBandsShad("cl", new glm::vec3(0.2, 0.0, 0.2));
     fftBandsShad("offset", 1.0f/512.0f);
     rfftVAO->draw();
+
 
     waveVBO->subdata(&displayEnergies[0], 0, 1024*sizeof(float));
     waveShad.use();
     waveShad("npoints", 1024);
-    waveShad("bb", 0.0f);
+    waveShad("bb", new glm::vec3(1.0, 0.0, 0.0));
+    waveShad("yOffset", 0.6f);
+    waveShad("K", 1.0f);
     waveVAO->draw();
-    std::cout << displayEnergiesP << std::endl;
 
+    waveVBO->subdata(&displayMaskedEnergies[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.6, 0.0, 0.2));
+    waveShad("yOffset", 0.6f);
+    waveShad("K", 1.0f);
+    waveVAO->draw();
+
+
+    waveVBO->subdata(&displayKickEnergy[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.0, 0.0, 1.0));
+    waveShad("yOffset", 0.2f);
+    waveShad("K", 0.2f);
+    waveVAO->draw();
+
+    waveVBO->subdata(&displaySnareEnergy[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.0, 0.0, 1.0));
+    waveShad("yOffset", -0.4f);
+    waveShad("K", 0.2f);
+    waveVAO->draw();
+
+    waveVBO->subdata(&displayCymbalEnergy[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.0, 0.0, 1.0));
+    waveShad("yOffset", -0.995f);
+    waveShad("K", 0.2f);
+    waveVAO->draw();
+
+
+
+    waveVBO->subdata(&displayKickEnergyComp[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.2, 0.0, 0.8));
+    waveShad("yOffset", 0.2f);
+    waveShad("K", 0.2f);
+    waveVAO->draw();
+    
+    waveVBO->subdata(&displaySnareEnergyComp[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.2, 0.0, 0.8));
+    waveShad("yOffset", -0.4f);
+    waveShad("K", 0.2f);
+    waveVAO->draw();
+    
+    waveVBO->subdata(&displayCymbalEnergyComp[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.2, 0.0, 0.8));
+    waveShad("yOffset", -0.995f);
+    waveShad("K", 0.2f);
+    waveVAO->draw();
+    
+
+
+    waveVBO->subdata(&displayKickCValue[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.6, 0.6, 0.6));
+    waveShad("yOffset", 0.2f);
+    waveShad("K", 1.0f);
+    waveVAO->draw();
+    
+    waveVBO->subdata(&displaySnareCValue[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.6, 0.6, 0.6));
+    waveShad("yOffset", -0.4f);
+    waveShad("K", 1.0f);
+    waveVAO->draw();
+    
+    waveVBO->subdata(&displayCymbalCValue[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.6, 0.6, 0.6));
+    waveShad("yOffset", -0.995f);
+    waveShad("K", 1.0f);
+    waveVAO->draw();
 }
 
 
