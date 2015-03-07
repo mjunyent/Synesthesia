@@ -88,6 +88,10 @@ public:
     std::vector<float> displayKickCValue;
     std::vector<float> displaySnareCValue;
     std::vector<float> displayCymbalCValue;
+    
+    std::vector<float> displayKick;
+    std::vector<float> displaySnare;
+    std::vector<float> displayCymbal;
 
     //todo, maybe look at filtered energy?
     

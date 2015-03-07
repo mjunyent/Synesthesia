@@ -76,6 +76,9 @@ BeatDetector2::BeatDetector2(AudioInput* adc) : adc(adc) {
     displayKickCValue = std::vector<float>(1024, 0.0);
     displaySnareCValue = std::vector<float>(1024, 0.0);
     displayCymbalCValue = std::vector<float>(1024, 0.0);
+    displayKick = std::vector<float>(1024, 0.0);
+    displaySnare = std::vector<float>(1024, 0.0);
+    displayCymbal = std::vector<float>(1024, 0.0);
     displayEnergiesP = 0;
 
     P = std::vector<float>(512, 0.0);
@@ -286,19 +289,21 @@ void BeatDetector2::callback(float *in, float* out, int n, double t) {
         for(int i=0; i<numBands; i++) {
             float c = (-1.0/300.0)*maskedVariances[i] + 2.6;
             cValue[i] = c*maskedrfftMean[i]; //Save c*mrfft to display.
-
+            fBeats[i] = std::max(0.0, fBeats[i]-10.0*n/44100.0); //Decrease fbeats.
+            if(maskedrfft[currentReg][i] >= c*maskedrfftMean[i]) fBeats[i] = 1.2;
             if(i==0) {
                 displayKickCValue[displayEnergiesP] = c-2.5;
                 displayKickEnergyComp[displayEnergiesP] = c*maskedrfftMean[i];
+                displayKick[displayEnergiesP] = fBeats[i];
             } else if(i==1) {
                 displaySnareCValue[displayEnergiesP] = c-2.5;
                 displaySnareEnergyComp[displayEnergiesP] = c*maskedrfftMean[i];
+                displaySnare[displayEnergiesP] = fBeats[i];
             } else if (i==2) {
                 displayCymbalCValue[displayEnergiesP] = c-2.5;
                 displayCymbalEnergyComp[displayEnergiesP] = c*maskedrfftMean[i];
+                displayCymbal[displayEnergiesP] = fBeats[i];
             }
-            fBeats[i] = std::max(0.0, fBeats[i]-10.0*n/44100.0); //Decrease fbeats.
-            if(maskedrfft[currentReg][i] >= c*maskedrfftMean[i]) fBeats[i] = 1.2;
         }
 
 
@@ -480,7 +485,7 @@ void BeatDetector2::draw() {
     waveVAO->draw();
     
 
-
+    
     waveVBO->subdata(&displayKickCValue[0], 0, 1024*sizeof(float));
     waveShad.use();
     waveShad("npoints", 1024);
@@ -503,6 +508,33 @@ void BeatDetector2::draw() {
     waveShad("bb", new glm::vec3(0.6, 0.6, 0.6));
     waveShad("yOffset", -0.995f);
     waveShad("K", 1.0f);
+    waveVAO->draw();
+
+
+
+
+    waveVBO->subdata(&displayKick[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.4, 0.4, 0.0));
+    waveShad("yOffset", 0.2f);
+    waveShad("K", 0.2f);
+    waveVAO->draw();
+    
+    waveVBO->subdata(&displaySnare[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.4, 0.4, 0.0));
+    waveShad("yOffset", -0.4f);
+    waveShad("K", 0.2f);
+    waveVAO->draw();
+    
+    waveVBO->subdata(&displayCymbal[0], 0, 1024*sizeof(float));
+    waveShad.use();
+    waveShad("npoints", 1024);
+    waveShad("bb", new glm::vec3(0.4, 0.4, 0.0));
+    waveShad("yOffset", -0.995f);
+    waveShad("K", 0.2f);
     waveVAO->draw();
 }
 
