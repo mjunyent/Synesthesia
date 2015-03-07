@@ -417,7 +417,7 @@ void BeatDetector2::draw() {
     waveShad("npoints", 1024);
     waveShad("bb", new glm::vec3(1.0, 0.0, 0.0));
     waveShad("yOffset", 0.6f);
-    waveShad("K", 1.0f);
+    waveShad("K", 0.1f);
     waveVAO->draw();
 
     waveVBO->subdata(&displayMaskedEnergies[0], 0, 1024*sizeof(float));
@@ -425,7 +425,7 @@ void BeatDetector2::draw() {
     waveShad("npoints", 1024);
     waveShad("bb", new glm::vec3(0.6, 0.0, 0.2));
     waveShad("yOffset", 0.6f);
-    waveShad("K", 1.0f);
+    waveShad("K", 0.1f);
     waveVAO->draw();
 
 
@@ -434,7 +434,7 @@ void BeatDetector2::draw() {
     waveShad("npoints", 1024);
     waveShad("bb", new glm::vec3(0.0, 0.0, 1.0));
     waveShad("yOffset", 0.2f);
-    waveShad("K", 0.2f);
+    waveShad("K", 0.02f);
     waveVAO->draw();
 
     waveVBO->subdata(&displaySnareEnergy[0], 0, 1024*sizeof(float));
@@ -442,7 +442,7 @@ void BeatDetector2::draw() {
     waveShad("npoints", 1024);
     waveShad("bb", new glm::vec3(0.0, 0.0, 1.0));
     waveShad("yOffset", -0.4f);
-    waveShad("K", 0.2f);
+    waveShad("K", 0.02f);
     waveVAO->draw();
 
     waveVBO->subdata(&displayCymbalEnergy[0], 0, 1024*sizeof(float));
@@ -450,7 +450,7 @@ void BeatDetector2::draw() {
     waveShad("npoints", 1024);
     waveShad("bb", new glm::vec3(0.0, 0.0, 1.0));
     waveShad("yOffset", -0.995f);
-    waveShad("K", 0.2f);
+    waveShad("K", 0.02f);
     waveVAO->draw();
 
 
@@ -460,7 +460,7 @@ void BeatDetector2::draw() {
     waveShad("npoints", 1024);
     waveShad("bb", new glm::vec3(0.2, 0.0, 0.8));
     waveShad("yOffset", 0.2f);
-    waveShad("K", 0.2f);
+    waveShad("K", 0.02f);
     waveVAO->draw();
     
     waveVBO->subdata(&displaySnareEnergyComp[0], 0, 1024*sizeof(float));
@@ -468,7 +468,7 @@ void BeatDetector2::draw() {
     waveShad("npoints", 1024);
     waveShad("bb", new glm::vec3(0.2, 0.0, 0.8));
     waveShad("yOffset", -0.4f);
-    waveShad("K", 0.2f);
+    waveShad("K", 0.02f);
     waveVAO->draw();
     
     waveVBO->subdata(&displayCymbalEnergyComp[0], 0, 1024*sizeof(float));
@@ -476,7 +476,7 @@ void BeatDetector2::draw() {
     waveShad("npoints", 1024);
     waveShad("bb", new glm::vec3(0.2, 0.0, 0.8));
     waveShad("yOffset", -0.995f);
-    waveShad("K", 0.2f);
+    waveShad("K", 0.02f);
     waveVAO->draw();
     
 
